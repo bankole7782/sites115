@@ -24,7 +24,7 @@ func main() {
 
 	switch os.Args[1] {
 	case "--help", "help", "h":
-  		fmt.Println(`sites115 dev is a terminal program used during development of a static site.
+  		fmt.Println(`sites115 devc is a terminal program used during development of a static site.
 
 Directory Commands:
   pwd     Print working directory. This is the directory where the files needed by any command
@@ -53,7 +53,7 @@ pagination_count: 10
 		configFileName := "site.zconf"
     siteName := os.Args[2]
     // create a new site
-    dirsToMake := []string{"templates", "stuffs", "data", "static", ".out" }
+    dirsToMake := []string{"templates", "stuffs", "static", ".out" }
     for _, dir := range dirsToMake {
       os.MkdirAll(filepath.Join(rootPath, siteName, dir), 0777)
     }
@@ -69,7 +69,12 @@ pagination_count: 10
       panic(err)
     }
 
-    os.WriteFile(filepath.Join(rootPath, siteName, "index.html"), []byte(nil), 0777)
+    indexHtml := `---
+template: base.html
+---
+`
+    os.WriteFile(filepath.Join(rootPath, siteName, "templates", "base.html"), baseHtmlBytes, 0777)
+    os.WriteFile(filepath.Join(rootPath, siteName, "stuffs", "index.html"), []byte(indexHtml), 0777)
     os.WriteFile(filepath.Join(rootPath, siteName, "static", jqueryName), jqueryBytes, 0777)
 
 	default:

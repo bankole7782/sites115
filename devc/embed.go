@@ -8,3 +8,6 @@ import (
 var jqueryBytes []byte
 
 var jqueryName  = "jquery-3.6.0.min.js"
+
+//go:embed base.html
+var baseHtmlBytes []byte
