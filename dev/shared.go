@@ -9,14 +9,6 @@ import (
 )
 
 
-func DoesPathExists(p string) bool {
-	if _, err := os.Stat(p); os.IsNotExist(err) {
-		return false
-	}
-	return true
-}
-
-
 func GetRootPath() (string, error) {
 	hd, err := os.UserHomeDir()
 	if err != nil {

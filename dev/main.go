@@ -100,7 +100,7 @@ tmp/
     }
 
     generate(os.Args[2])
-    
+
 	default:
 		color.Red.Println("Unexpected command. Run the cli with --help to find out the supported commands.")
 		os.Exit(1)

@@ -9,6 +9,7 @@ import (
   "errors"
   "path/filepath"
   "bufio"
+  "github.com/bankole7782/sites115/sites115s"
 )
 
 
@@ -30,10 +31,10 @@ func generate(siteName string) {
     }
 
     if info.IsDir() {
-      if ! DoesPathExists(filepath.Join(path, "index.html")) {
+      if ! sites115s.DoesPathExists(filepath.Join(path, "index.html")) {
         return errors.New(fmt.Sprintf("The directory '%s' does not have an index.html. It is compulsory", path))
       }
-      if ! DoesPathExists(filepath.Join(path, "toc.txt")) && path != dir {
+      if ! sites115s.DoesPathExists(filepath.Join(path, "toc.txt")) && path != dir {
         return errors.New(fmt.Sprintf("The directory '%s' does not have an toc.txt . It is compulsory", path))
       }
     }
@@ -143,5 +144,6 @@ func RenderHTMLToFile(s, path, siteName string) error {
   writer := bufio.NewWriter(outPathHandle)
 
   tmpl.Execute(writer, Context{pageVariables})
+  writer.Flush()
   return nil
 }
