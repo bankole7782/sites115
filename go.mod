@@ -5,6 +5,7 @@ go 1.17
 require (
 	github.com/gookit/color v1.5.0
 	github.com/otiai10/copy v1.7.0
+	github.com/russross/blackfriday v1.6.0
 	github.com/saenuma/zazabul v1.1.4
 )
 
