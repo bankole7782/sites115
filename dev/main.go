@@ -34,6 +34,8 @@ Main Commands:
   ns      Creates a newsite from a template. It expects the name of the site. The site would be created
           in the 'working directory'
 
+  gss     Generates Static Site. It expects the name of the site. And it reloads as new items are written.
+
   			`)
 
 	case "pwd":
@@ -49,11 +51,15 @@ Main Commands:
 // pagination_count is the number of links to put in a page for the purposes of pagination
 pagination_count: 10
 
+// port
+// port is the number that the server would listen on.
+port: 8080
+
 	`
 		configFileName := "site.zconf"
     siteName := os.Args[2]
     // create a new site
-    dirsToMake := []string{"templates", "stuffs", "static", ".out" }
+    dirsToMake := []string{"templates", "stuffs", "static", "out" }
     for _, dir := range dirsToMake {
       os.MkdirAll(filepath.Join(rootPath, siteName, dir), 0777)
     }
@@ -74,14 +80,27 @@ template: base.html
 title:
 meta:
 keywords:
+date:
 ---
+`
+
+    gitignoreFile := `
+out/
+tmp/
 `
     os.WriteFile(filepath.Join(rootPath, siteName, "templates", "base.html"), baseHtmlBytes, 0777)
     os.WriteFile(filepath.Join(rootPath, siteName, "stuffs", "index.html"), []byte(indexHtml), 0777)
-    os.WriteFile(filepath.Join(rootPath, siteName, "stuffs", "404.html"), []byte(indexHtml), 0777)
-    os.WriteFile(filepath.Join(rootPath, siteName, "stuffs", "500.html"), []byte(indexHtml), 0777)
     os.WriteFile(filepath.Join(rootPath, siteName, "static", jqueryName), jqueryBytes, 0777)
+    os.WriteFile(filepath.Join(rootPath, siteName, ".gitignore"), []byte(gitignoreFile), 0777)
 
+  case "gss":
+    if len(os.Args) != 3 {
+      color.Red.Println("Expected three arguments. Please check the help")
+      os.Exit(1)
+    }
+
+    generate(os.Args[2])
+    
 	default:
 		color.Red.Println("Unexpected command. Run the cli with --help to find out the supported commands.")
 		os.Exit(1)
