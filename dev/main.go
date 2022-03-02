@@ -24,7 +24,7 @@ func main() {
 
 	switch os.Args[1] {
 	case "--help", "help", "h":
-  		fmt.Println(`sites115 devc is a terminal program used during development of a static site.
+  		fmt.Println(`sites115 dev is a terminal program used during development of a static site.
 
 Directory Commands:
   pwd     Print working directory. This is the directory where the files needed by any command
@@ -71,10 +71,15 @@ pagination_count: 10
 
     indexHtml := `---
 template: base.html
+title:
+meta:
+keywords:
 ---
 `
     os.WriteFile(filepath.Join(rootPath, siteName, "templates", "base.html"), baseHtmlBytes, 0777)
     os.WriteFile(filepath.Join(rootPath, siteName, "stuffs", "index.html"), []byte(indexHtml), 0777)
+    os.WriteFile(filepath.Join(rootPath, siteName, "stuffs", "404.html"), []byte(indexHtml), 0777)
+    os.WriteFile(filepath.Join(rootPath, siteName, "stuffs", "500.html"), []byte(indexHtml), 0777)
     os.WriteFile(filepath.Join(rootPath, siteName, "static", jqueryName), jqueryBytes, 0777)
 
 	default:
