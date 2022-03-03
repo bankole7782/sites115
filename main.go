@@ -24,7 +24,7 @@ func main() {
 
 	switch os.Args[1] {
 	case "--help", "help", "h":
-  		fmt.Println(`sites115 dev is a terminal program used during development of a static site.
+  		fmt.Println(`sites115 is a terminal program used during development of a static site.
 
 Directory Commands:
   pwd     Print working directory. This is the directory where the files needed by any command
@@ -34,7 +34,7 @@ Main Commands:
   ns      Creates a newsite from a template. It expects the name of the site. The site would be created
           in the 'working directory'
 
-  gss     Generates Static Site. It expects the name of the site. And it reloads as new items are written.
+  gss     Generates Static Site. It expects the name of the site.
 
   			`)
 
