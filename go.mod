@@ -3,6 +3,7 @@ module github.com/bankole7782/sites115
 go 1.17
 
 require (
+	github.com/adam-hanna/arrayOperations v0.2.6
 	github.com/gookit/color v1.5.0
 	github.com/kljensen/snowball v0.6.0
 	github.com/microcosm-cc/bluemonday v1.0.18

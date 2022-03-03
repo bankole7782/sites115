@@ -11,7 +11,14 @@ import (
   "github.com/gookit/color"
   "strings"
   "net/url"
+  "github.com/adam-hanna/arrayOperations"
+  "sort"
+  "strconv"
+  "encoding/json"
+  "html/template"
+  "math"
 )
+
 
 func main() {
   path := os.Args[1]
@@ -23,7 +30,7 @@ func main() {
 
   conf, err := zazabul.LoadConfigFile(confPath)
   if err != nil {
-    panic(err)
+    log.Println(err)
   }
 
   for _, item := range conf.Items {
@@ -39,6 +46,8 @@ func main() {
     log.Println(r.URL.Path)
     if r.URL.Path == "/search_results" {
       doSearch(w, r)
+    } else if strings.HasPrefix(r.URL.Path, "/_indexes") || strings.HasPrefix(r.URL.Path, "/_templates") {
+      http.ServeFile(w, r, filepath.Join(path, "404.html"))
     } else if strings.HasSuffix(r.URL.Path, "/") && ! strings.HasPrefix(r.URL.Path, "/static") {
       if ! sites115s.DoesPathExists(filepath.Join(path, r.URL.Path + "index.html")) {
         http.ServeFile(w, r, filepath.Join(path, "404.html"))
@@ -63,11 +72,159 @@ func main() {
 
 
 func doSearch(w http.ResponseWriter, r *http.Request) {
+  path := os.Args[1]
   params, err := url.ParseQuery(r.URL.RawQuery)
   if err != nil {
-    http.ServeFile(w, r, filepath.Join(os.Args[1], "404.html"))
+    http.ServeFile(w, r, filepath.Join(path, "404.html"))
   }
-  fmt.Println(params)
 
-  
+  words := strings.Fields(params["s"][0])
+
+  retIds := make([]string, 0)
+  textWeights := make(map[string]int64)
+  for _, word := range words {
+    word = sites115s.CleanWord(word)
+    if word == "" {
+      continue
+    }
+    if sites115s.FindIn(sites115s.STOP_WORDS, word) != -1 {
+      continue
+    }
+
+    dirFIs, err := os.ReadDir(filepath.Join(path, "_indexes", word))
+    if err != nil {
+      http.ServeFile(w, r, filepath.Join(path, "404.html"))
+      return
+    }
+
+    tmpIds := make([]string, 0)
+    for _, dirFI := range dirFIs {
+      raw, err := os.ReadFile(filepath.Join(path, "_indexes", word, dirFI.Name()))
+      if err != nil {
+        log.Println(err)
+      }
+
+      wordCount, err := strconv.ParseInt(string(raw), 10, 64)
+      if err != nil {
+        log.Println(err)
+      }
+      oldWordCount, ok := textWeights[dirFI.Name()]
+      if ! ok {
+        textWeights[dirFI.Name()] = wordCount
+      } else {
+        textWeights[dirFI.Name()] = wordCount + oldWordCount
+      }
+      tmpIds = append(tmpIds, dirFI.Name())
+    }
+
+    retIds = append(retIds, tmpIds...)
+  }
+  retIds = arrayOperations.DistinctString(retIds)
+
+  sort.SliceStable(retIds, func(i, j int) bool {
+    x := textWeights[ retIds[i] ]
+    y := textWeights[ retIds[j] ]
+    return x < y
+  })
+
+  // change the links to addresses.
+  rawAllPagesMap, err := os.ReadFile(filepath.Join(path, "allpages.json"))
+  if err != nil {
+    log.Println(err)
+    return
+  }
+  allPagesMap := make(map[string]string)
+  err = json.Unmarshal(rawAllPagesMap, &allPagesMap)
+  if err != nil {
+    log.Println(err)
+    return
+  }
+  foundPages := make([]string, 0)
+  tocObj := make([]map[string]string, 0)
+
+  for _, retId := range retIds {
+    foundPages = append(foundPages, allPagesMap[retId])
+
+    descPath := filepath.Join(path, "_page_descs", retId + ".json")
+    rawDesc, _ := os.ReadFile(descPath)
+    pageVariables := make(map[string]string)
+    json.Unmarshal(rawDesc, &pageVariables)
+    pageVariables["url"] = strings.ReplaceAll(allPagesMap[retId], ".html", "")
+    tocObj = append(tocObj, pageVariables)
+  }
+
+  // execute the search results to the templates
+  confPath := filepath.Join(filepath.Join(path, "site.zconf"))
+
+  conf, err := zazabul.LoadConfigFile(confPath)
+  if err != nil {
+    log.Println(err)
+    return
+  }
+
+  paginationCount, err := strconv.Atoi(conf.Get("pagination_count"))
+  if err != nil {
+    log.Println(err)
+    return
+  }
+
+  rawSearchResultsTemplate, _ := os.ReadFile(filepath.Join(path, "_templates", "search_results.html"))
+  dataPart, markupPart := sites115s.GetPartsOfMarkup(string(rawSearchResultsTemplate))
+  pageVariables := sites115s.ParsePageVariables(dataPart)
+
+  cleanSearchResultsPath := filepath.Join(path, "_templates", "clean_search_results.html")
+  os.WriteFile(cleanSearchResultsPath, []byte(markupPart), 0777)
+
+  tmpl, err := template.ParseFiles(filepath.Join(path, "_templates", pageVariables["template"]), cleanSearchResultsPath)
+  if err != nil {
+    log.Println(err)
+    return
+  }
+
+  totalLinks := len(foundPages)
+  totalPages := math.Ceil( float64(totalLinks) / float64(paginationCount) )
+
+  pagesArr := make([]int, 0)
+  pageMapArr := make([]map[string]string, 0)
+
+  paginator := sites115s.PaginatorStruct{TotalPages: int(totalPages), PaginationCount: paginationCount,
+    TotalPagesArr: pagesArr, Pages: pageMapArr}
+
+  pageNum, _ := strconv.Atoi(params.Get("p"))
+
+  paginator.Page = pageNum + 1
+
+  for i := 0; i < int(totalPages); i++ {
+    pagesArr = append(pagesArr, i+1)
+
+    if i == int(totalPages) - 1 {
+      paginator.Pages = tocObj[(pageNum) * paginationCount: ]
+    } else {
+      paginator.Pages = tocObj[(pageNum) * paginationCount: (pageNum+1) * paginationCount]
+    }
+
+  }
+
+  if pageNum == 0 {
+    paginator.PreviousPage = -1
+  } else {
+    paginator.PreviousPage = pageNum
+    params.Set("p", strconv.Itoa(paginator.PreviousPage))
+    paginator.PreviousPagePath = "/search_results?" + params.Encode()
+  }
+
+  if pageNum == int(totalPages) - 1 {
+    paginator.NextPage = -1
+  } else {
+    paginator.NextPage = pageNum
+    params.Set("p", strconv.Itoa(paginator.NextPage))
+    paginator.NextPagePath = "/search_results?" + params.Encode()
+  }
+
+  type Context struct {
+    Page map[string]string
+    Paginator sites115s.PaginatorStruct
+  }
+
+  tmpl.Execute(w, Context{pageVariables, paginator})
 }

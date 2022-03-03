@@ -18,22 +18,11 @@ import (
 )
 
 
-type PaginatorStruct struct {
-  Page int
-  PaginationCount int
-  Pages []map[string]string
-  TotalPages int
-  PreviousPage int
-  PreviousPagePath string
-  NextPage int
-  NextPagePath string
-  TotalPagesArr []int
-}
-
 type HTMLContext struct {
   Page map[string]string
-  Paginator PaginatorStruct
+  Paginator sites115s.PaginatorStruct
 }
+
 
 func generate(siteName string) {
   rootPath, _ := GetRootPath()
@@ -96,57 +85,26 @@ func generate(siteName string) {
   if err != nil {
     panic(err)
   }
-}
 
+  // copy search templates
+  if sites115s.DoesPathExists(filepath.Join(dir, "search_results.html")) {
+    copy.Copy(filepath.Join(rootPath, siteName, "stuffs", "search_results.html"),
+      filepath.Join(rootPath, siteName, "out", "_templates", "search_results.html"))
 
-func GetPartsOfMarkup(s string) (string, string) {
-  parts := strings.Split(s, "\n")
-  var endOfDataIndex int
-  for index, part := range parts {
-    if index == 0 {
-      continue
-    }
-    if part == "---" {
-      endOfDataIndex = index
-      break
-    }
+    searchResultsPath := filepath.Join(dir, "search_results.html")
+    rawSearchResultsTemplate, _ := os.ReadFile(searchResultsPath)
+    dataPart, _ := sites115s.GetPartsOfMarkup(string(rawSearchResultsTemplate))
+    pageVariables := sites115s.ParsePageVariables(dataPart)
+    copy.Copy(filepath.Join(rootPath, siteName, "templates", pageVariables["template"]),
+      filepath.Join(rootPath, siteName, "out", "_templates", pageVariables["template"]))
   }
-
-  dataPart := strings.Join(parts[1: endOfDataIndex], "\n")
-  markupPart := strings.Join(parts[endOfDataIndex+1: ], "\n")
-  return dataPart, markupPart
-}
-
-
-func ParsePageVariables(s string) map[string]string {
-  parts := strings.Split(s, "\n")
-  var colonIndex int
-  ret := make(map[string]string)
-  for _, line := range parts {
-    for i, ch := range line {
-      if fmt.Sprintf("%c", ch) == ":" {
-        colonIndex = i
-        break
-      }
-    }
-
-    if colonIndex == 0 {
-      continue
-    }
-
-    itemName := strings.ToLower(strings.TrimSpace(line[0: colonIndex]))
-    itemValue := strings.TrimSpace(line[colonIndex + 1 : ])
-    ret[itemName] = itemValue
-  }
-
-  return ret
 }
 
 
 func RenderHTMLToFile(s, path, siteName string) error {
   rootPath, _ := GetRootPath()
-  dataPart, markupPart := GetPartsOfMarkup(s)
-  pageVariables := ParsePageVariables(dataPart)
+  dataPart, markupPart := sites115s.GetPartsOfMarkup(s)
+  pageVariables := sites115s.ParsePageVariables(dataPart)
 
   confPath := filepath.Join(filepath.Join(rootPath, siteName, "site.zconf"))
 
@@ -183,7 +141,7 @@ func RenderHTMLToFile(s, path, siteName string) error {
     return err
   }
 
-  var paginator PaginatorStruct
+  var paginator sites115s.PaginatorStruct
   tocObj := make([]map[string]string, 0)
   if strings.HasSuffix(path, "index.html") && path != "index.html" {
     tocFile := strings.ReplaceAll(path, "index.html", "toc.txt")
@@ -205,8 +163,8 @@ func RenderHTMLToFile(s, path, siteName string) error {
         return err
       }
 
-      dataPart, _ := GetPartsOfMarkup(string(rawTocLinePath))
-      pageVariables := ParsePageVariables(dataPart)
+      dataPart, _ := sites115s.GetPartsOfMarkup(string(rawTocLinePath))
+      pageVariables := sites115s.ParsePageVariables(dataPart)
       tocURL := strings.ReplaceAll(tocLinePath, filepath.Join(rootPath, siteName, "stuffs"), "")
       tocURL = strings.ReplaceAll(tocURL, ".md", "")
       tocURL = strings.ReplaceAll(tocURL, ".html", "")
@@ -222,7 +180,7 @@ func RenderHTMLToFile(s, path, siteName string) error {
     for i := 0; i < int(totalPages); i++ {
       pagesArr = append(pagesArr, i+1)
     }
-    paginator := PaginatorStruct{TotalPages: int(totalPages), PaginationCount: paginationCount,
+    paginator := sites115s.PaginatorStruct{TotalPages: int(totalPages), PaginationCount: paginationCount,
       TotalPagesArr: pagesArr}
 
     for i := 0; i < int(totalPages); i++ {
@@ -283,9 +241,8 @@ func innerRenderHTMLToFile(path, siteName string, ctx HTMLContext, tmpl *templat
 
 func RenderMDToFile(s, path, siteName string) error {
   rootPath, _ := GetRootPath()
-  dataPart, markupPart := GetPartsOfMarkup(s)
-  pageVariables := ParsePageVariables(dataPart)
-
+  dataPart, markupPart := sites115s.GetPartsOfMarkup(s)
+  pageVariables := sites115s.ParsePageVariables(dataPart)
 
   tmpl, err := template.ParseFiles(filepath.Join(rootPath, siteName, "templates", pageVariables["template"]),
     filepath.Join(rootPath, siteName, "templates", pageVariables["md_template"]))

@@ -16,6 +16,7 @@ func generateIndexes(siteName string) {
   rootPath, _ := GetRootPath()
 
   indexesPath := filepath.Join(rootPath, siteName, "out", "_indexes")
+  os.RemoveAll(indexesPath)
   os.MkdirAll(indexesPath, 0777)
 
   dir := filepath.Join(rootPath, siteName, "out")
@@ -40,7 +41,9 @@ func generateIndexes(siteName string) {
       if strings.HasPrefix(path, filepath.Join(toRemove, "_indexes")) {
         return nil
       }
-
+      if strings.HasPrefix(path, filepath.Join(toRemove, "_templates")) {
+        return nil
+      }
       pathToWrite := strings.Replace(path, dir, "", 1)
       allPages = append(allPages, pathToWrite)
 
@@ -61,14 +64,13 @@ func generateIndexes(siteName string) {
   if err != nil {
     panic(err)
   }
-  os.WriteFile(filepath.Join(rootPath, siteName, "out", "_indexes", "allpages.json"), jsonBytes, 0777)
+  os.WriteFile(filepath.Join(rootPath, siteName, "out", "allpages.json"), jsonBytes, 0777)
 
   // generate indexes
   err = filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
     if err != nil {
       return err
     }
-
 
     if ! info.IsDir() {
       if ! strings.HasSuffix(dir, "/") {
@@ -80,6 +82,12 @@ func generateIndexes(siteName string) {
         return nil
       }
       if strings.HasPrefix(path, filepath.Join(toRemove, "_indexes")) {
+        return nil
+      }
+      if strings.HasPrefix(path, filepath.Join(toRemove, "_templates")) {
+        return nil
+      }
+      if strings.HasSuffix(path, "allpages.json") {
         return nil
       }
 
@@ -96,6 +104,57 @@ func generateIndexes(siteName string) {
     }
     return nil
   })
+
+  if err != nil {
+    panic(err)
+  }
+
+  os.MkdirAll(filepath.Join(rootPath, siteName, "out", "_page_descs"), 0777)
+
+  // get all dataPart's and save
+  walkingDir := filepath.Join(rootPath, siteName, "stuffs")
+  err = filepath.Walk(walkingDir, func(path string, info os.FileInfo, err error) error {
+    if err != nil {
+      return err
+    }
+
+    if ! info.IsDir() {
+      if ! strings.HasSuffix(dir, "/") {
+        dir += "/"
+      }
+
+      if strings.HasSuffix(path, ".txt") {
+        return nil
+      }
+
+      raw, err := os.ReadFile(path)
+      if err != nil {
+        return err
+      }
+
+      dataPart, _ := sites115s.GetPartsOfMarkup(string(raw))
+
+      pageVariables := sites115s.ParsePageVariables(dataPart)
+      pathToWrite := strings.Replace(path, walkingDir, "", 1)
+
+      index := 0
+      for k, v := range allPagesMap {
+        if "/" + v == pathToWrite {
+          index = k
+          break
+        }
+      }
+
+      jsonBytes, _ := json.Marshal(pageVariables)
+      os.WriteFile(filepath.Join(rootPath, siteName, "out", "_page_descs", strconv.Itoa(index) + ".json"), jsonBytes, 0777)
+    }
+    return nil
+  })
+
+  if err != nil {
+    panic(err)
+  }
+
 }
 
 

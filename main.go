@@ -99,8 +99,13 @@ tmp/
       os.Exit(1)
     }
 
-    generate(os.Args[2])
-    generateIndexes(os.Args[2])
+    siteName := os.Args[2]
+
+    os.RemoveAll(filepath.Join(rootPath, siteName, "out"))
+    os.MkdirAll(filepath.Join(rootPath, siteName, "out"), 0777)
+
+    generate(siteName)
+    generateIndexes(siteName)
 
 	default:
 		color.Red.Println("Unexpected command. Run the cli with --help to find out the supported commands.")
