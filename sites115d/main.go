@@ -10,6 +10,7 @@ import (
   "path/filepath"
   "github.com/gookit/color"
   "strings"
+  "net/url"
 )
 
 func main() {
@@ -36,7 +37,9 @@ func main() {
 
   mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
     log.Println(r.URL.Path)
-    if strings.HasSuffix(r.URL.Path, "/") && ! strings.HasPrefix(r.URL.Path, "/static") {
+    if r.URL.Path == "/search_results" {
+      doSearch(w, r)
+    } else if strings.HasSuffix(r.URL.Path, "/") && ! strings.HasPrefix(r.URL.Path, "/static") {
       if ! sites115s.DoesPathExists(filepath.Join(path, r.URL.Path + "index.html")) {
         http.ServeFile(w, r, filepath.Join(path, "404.html"))
       } else {
@@ -56,4 +59,15 @@ func main() {
   })
 
   http.ListenAndServe(fmt.Sprintf(":%s", conf.Get("port")), mux)
+}
+
+
+func doSearch(w http.ResponseWriter, r *http.Request) {
+  params, err := url.ParseQuery(r.URL.RawQuery)
+  if err != nil {
+    http.ServeFile(w, r, filepath.Join(os.Args[1], "404.html"))
+  }
+  fmt.Println(params)
+
+  
 }

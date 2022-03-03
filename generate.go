@@ -89,8 +89,6 @@ func generate(siteName string) {
         return RenderMDToFile(string(raw), pathToWrite, siteName)
       }
 
-      // outStr := fmt.Sprintf("%s,,,%d\n", pathToWrite, info.Size())
-      // indexFile.WriteString(outStr)
     }
     return nil
   })
