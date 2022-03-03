@@ -44,6 +44,8 @@ func main() {
       }
     } else if strings.HasSuffix(r.URL.Path, "/") && strings.HasPrefix(r.URL.Path, "/static") {
       http.ServeFile(w, r, filepath.Join(path, "static", "index.html"))
+    } else if strings.HasPrefix(r.URL.Path, "/static") {
+      http.ServeFile(w, r, filepath.Join(path, r.URL.Path))
     } else {
       if ! sites115s.DoesPathExists(filepath.Join(path, r.URL.Path + ".html")) {
         http.ServeFile(w, r, filepath.Join(path, "404.html"))
