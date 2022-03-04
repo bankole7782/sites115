@@ -34,7 +34,7 @@ Main Commands:
   ns      Creates a newsite from a template. It expects the name of the site. The site would be created
           in the 'working directory'
 
-  gss     Generates Static Site. It expects the name of the site.
+  gss     Generates Static Site. It expects the name of the site. It doens't reload currently.
 
   			`)
 
@@ -94,7 +94,7 @@ tmp/
     os.WriteFile(filepath.Join(rootPath, siteName, ".gitignore"), []byte(gitignoreFile), 0777)
 
     fmt.Printf("Your site is created at '%s'.\n", filepath.Join(rootPath, siteName))
-    
+
   case "gss":
     if len(os.Args) != 3 {
       color.Red.Println("Expected three arguments. Please check the help")
