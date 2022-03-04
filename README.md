@@ -20,10 +20,10 @@ a static sites generator with search functionality
     ```
 1.  Every html or markdown file must begin with a variables part. It must begin with `---` and end with `---`. Sample contents include
     ```
-template: base.html
-title: Saenuma - A beautiful programs website
-meta: Saenuma homepage. Saenuma delivers beautiful programs.
-keywords: programs, database, program, forms, git, stories
+    template: base.html
+    title: Saenuma - A beautiful programs website
+    meta: Saenuma homepage. Saenuma delivers beautiful programs.
+    keywords: programs, database, program, forms, git, stories
     ```
     it must contain the variables: template, title, meta and keywords. You can include your own variables.
 
@@ -66,3 +66,15 @@ Contains the query for example. `s=bank+account`
 
 ### HTML
 Contains a HTML generated from markdown.
+
+
+## About searches
+
+1.  The search page should send queries using javascript to `/search_results`
+1.  The end result should look like `/search_results?s=bank+account`
+
+
+## Don't use Nginx or Apache
+
+The projects ships with its own alternative in the folder `sites115d`.
+This is the only way to enable search functionality.
