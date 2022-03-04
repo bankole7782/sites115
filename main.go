@@ -93,6 +93,8 @@ tmp/
     os.WriteFile(filepath.Join(rootPath, siteName, "static", jqueryName), jqueryBytes, 0777)
     os.WriteFile(filepath.Join(rootPath, siteName, ".gitignore"), []byte(gitignoreFile), 0777)
 
+    fmt.Printf("Your site is created at '%s'.\n", filepath.Join(rootPath, siteName))
+    
   case "gss":
     if len(os.Args) != 3 {
       color.Red.Println("Expected three arguments. Please check the help")
