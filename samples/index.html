@@ -1,0 +1,33 @@
+---
+template: base.html
+title: Saenuma's technical blog
+meta: Saenuma's technical blog
+keywords: blog, post, news
+---
+
+{{define "main"}}
+  <h1 class="shout">Blog Index (for Programmers)</h1>
+  {{range .Paginator.Pages}}
+    <div class="blog-item">
+      <h2>{{.title}}</h2>
+      <p><b>Date: {{.date}}</b></p>
+      <p>
+        {{.meta}}
+        <br>
+        <a href="{{.url}}">Read More..</a>
+      </p>
+    </div>
+
+  {{end}}
+
+
+  {{if gt .Paginator.TotalPages 1}}
+    <div id="pagination">
+      Pages:
+      {{range .Paginator.TotalPagesArr}}
+        <a class="pagination-link" href="index{{.}}">{{.}}</a>
+      {{end}}
+    </div>
+  {{end}}
+
+{{end}}

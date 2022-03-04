@@ -224,7 +224,10 @@ func doSearch(w http.ResponseWriter, r *http.Request) {
   type Context struct {
     Page map[string]string
     Paginator sites115s.PaginatorStruct
+    SearchStr string
   }
 
-  tmpl.Execute(w, Context{pageVariables, paginator})
+  searchStr := "s=" + params.Get("s")
+
+  tmpl.Execute(w, Context{pageVariables, paginator, searchStr})
 }
