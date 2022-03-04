@@ -110,8 +110,8 @@ tmp/
     os.RemoveAll(filepath.Join(rootPath, siteName, "out"))
     os.MkdirAll(filepath.Join(rootPath, siteName, "out"), 0777)
 
-    generate(siteName)
-    generateIndexes(siteName)
+    render(siteName)
+    renderIndexes(siteName)
     os.RemoveAll(filepath.Join(rootPath, siteName, "out", "tmp"))
 
     fmt.Println("Started...")
@@ -127,8 +127,8 @@ tmp/
           os.RemoveAll(filepath.Join(rootPath, siteName, "out"))
           os.MkdirAll(filepath.Join(rootPath, siteName, "out"), 0777)
 
-          generate(siteName)
-          generateIndexes(siteName)
+          render(siteName)
+          renderIndexes(siteName)
           os.RemoveAll(filepath.Join(rootPath, siteName, "out", "tmp"))
 
         case err := <-w.Error:

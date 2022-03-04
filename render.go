@@ -24,7 +24,7 @@ type HTMLContext struct {
 }
 
 
-func generate(siteName string) {
+func render(siteName string) {
   rootPath, _ := GetRootPath()
 
   tmpPath := filepath.Join(rootPath, siteName, "tmp")

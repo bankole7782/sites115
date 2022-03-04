@@ -12,7 +12,7 @@ import (
   "github.com/bankole7782/sites115/sites115s"
 )
 
-func generateIndexes(siteName string) {
+func renderIndexes(siteName string) {
 
   rootPath, _ := GetRootPath()
 
