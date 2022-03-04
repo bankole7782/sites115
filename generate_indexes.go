@@ -8,6 +8,7 @@ import (
   "fmt"
   "strconv"
   "github.com/microcosm-cc/bluemonday"
+  "github.com/PuerkitoBio/goquery"
   "github.com/bankole7782/sites115/sites115s"
 )
 
@@ -42,6 +43,9 @@ func generateIndexes(siteName string) {
         return nil
       }
       if strings.HasPrefix(path, filepath.Join(toRemove, "_templates")) {
+        return nil
+      }
+      if strings.HasPrefix(path, filepath.Join(toRemove, "_page_descs")) {
         return nil
       }
       pathToWrite := strings.Replace(path, dir, "", 1)
@@ -85,6 +89,9 @@ func generateIndexes(siteName string) {
         return nil
       }
       if strings.HasPrefix(path, filepath.Join(toRemove, "_templates")) {
+        return nil
+      }
+      if strings.HasPrefix(path, filepath.Join(toRemove, "_page_descs")) {
         return nil
       }
       if strings.HasSuffix(path, "allpages.json") {
@@ -164,7 +171,16 @@ func doIndex(textPath, index, siteName string) {
 		return
 	}
 
-	textStrippedOfHtml := bluemonday.StrictPolicy().Sanitize(string(raw))
+  doc, err := goquery.NewDocumentFromReader(strings.NewReader(string(raw)))
+  if err != nil {
+    panic(err)
+  }
+  html, err := doc.Find("body").Html()
+  if err != nil {
+    panic(err)
+  }
+
+	textStrippedOfHtml := bluemonday.StrictPolicy().Sanitize(html)
 	words := strings.Fields(textStrippedOfHtml)
 
 	wordCountMap := make(map[string]int64)
