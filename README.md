@@ -2,11 +2,13 @@
 
 a static sites generator with search functionality
 
+
 ## Folder Structure
 - `out` contains the generated site
 - `static` contains the assets that would not be rendered but returned as is.
 - `stuffs` contains the html and markdown files that would be rendered.
 - `templates` contains the templates that is used to render html and markdown files contained in `stuffs`
+
 
 ## Conventions used in folder `stuffs`
 
