@@ -5,8 +5,9 @@ a static sites generator with search functionality
 
 ## How to create a site
 1.  Get the source from github.
-1.  Switch to the folder and run `go run . ns sitename` to create a site called 'sitename'.
-
+1.  Switch to the folder and run `go run . ns sitename` to create a site called `sitename`.
+1.  To render a site run `go run . gss sitename` to render a site called `sitename`
+1.  To view your site run `go run ./sites115d /path/to/sitename/out`. Replace /path/to/sitename/out with the actual dir.
 
 ## Folder Structure
 - `out` contains the generated site
@@ -85,3 +86,5 @@ Contains a HTML generated from markdown.
 
 The projects ships with its own alternative in the folder `sites115d`.
 This is the only way to enable search functionality.
+
+The `sites115d` expects the path to a folder. This folder must be the the `out` folder described above.
