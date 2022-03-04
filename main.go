@@ -6,6 +6,9 @@ import (
   "path/filepath"
   "fmt"
   "github.com/saenuma/zazabul"
+  "github.com/radovskyb/watcher"
+  "log"
+  "time"
 )
 
 
@@ -31,17 +34,17 @@ Directory Commands:
           in this cli program must reside.
 
 Main Commands:
-  ns      Creates a newsite from a template. It expects the name of the site. The site would be created
+  cs      Creates a newsite from a template. It expects the name of the site. The site would be created
           in the 'working directory'
 
-  gss     Generates Static Site. It expects the name of the site. It doens't reload currently.
+  rs      Render Site. It expects the name of the site. It supports reload when the site changes.
 
   			`)
 
 	case "pwd":
 		fmt.Println(rootPath)
 
-  case "ns":
+  case "cs":
     if len(os.Args) != 3 {
       color.Red.Println("Expected three arguments. Please check the help")
       os.Exit(1)
@@ -90,12 +93,13 @@ tmp/
 `
     os.WriteFile(filepath.Join(rootPath, siteName, "templates", "base.html"), baseHtmlBytes, 0777)
     os.WriteFile(filepath.Join(rootPath, siteName, "stuffs", "index.html"), []byte(indexHtml), 0777)
+    os.WriteFile(filepath.Join(rootPath, siteName, "stuffs", "404.html"), []byte(indexHtml), 0777)
     os.WriteFile(filepath.Join(rootPath, siteName, "static", jqueryName), jqueryBytes, 0777)
     os.WriteFile(filepath.Join(rootPath, siteName, ".gitignore"), []byte(gitignoreFile), 0777)
 
     fmt.Printf("Your site is created at '%s'.\n", filepath.Join(rootPath, siteName))
 
-  case "gss":
+  case "rs":
     if len(os.Args) != 3 {
       color.Red.Println("Expected three arguments. Please check the help")
       os.Exit(1)
@@ -108,6 +112,50 @@ tmp/
 
     generate(siteName)
     generateIndexes(siteName)
+    os.RemoveAll(filepath.Join(rootPath, siteName, "out", "tmp"))
+
+    fmt.Println("Started...")
+
+    // watch for new files
+    w := watcher.New()
+
+    go func() {
+      for {
+        select {
+        case event := <-w.Event:
+          fmt.Println(event)
+          os.RemoveAll(filepath.Join(rootPath, siteName, "out"))
+          os.MkdirAll(filepath.Join(rootPath, siteName, "out"), 0777)
+
+          generate(siteName)
+          generateIndexes(siteName)
+          os.RemoveAll(filepath.Join(rootPath, siteName, "out", "tmp"))
+
+        case err := <-w.Error:
+          log.Fatalln(err)
+        case <-w.Closed:
+          return
+        }
+      }
+    }()
+
+    if err := w.AddRecursive(filepath.Join(rootPath, siteName, "static")); err != nil {
+      log.Fatalln(err)
+    }
+    if err := w.AddRecursive(filepath.Join(rootPath, siteName, "stuffs")); err != nil {
+      log.Fatalln(err)
+    }
+    if err := w.AddRecursive(filepath.Join(rootPath, siteName, "templates")); err != nil {
+      log.Fatalln(err)
+    }
+    if err := w.Add(filepath.Join(rootPath, siteName, "site.zconf")); err != nil {
+      log.Fatalln(err)
+    }
+
+    if err := w.Start(time.Millisecond * 100); err != nil {
+      log.Fatalln(err)
+    }
+
 
 	default:
 		color.Red.Println("Unexpected command. Run the cli with --help to find out the supported commands.")

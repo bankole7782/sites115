@@ -33,7 +33,7 @@ func generate(siteName string) {
   copy.Copy(filepath.Join(rootPath, siteName, "site.zconf"), filepath.Join(rootPath, siteName, "out", "site.zconf"))
   // copy statics
   copy.Copy(filepath.Join(rootPath, siteName, "static"), filepath.Join(rootPath, siteName, "out", "static"))
-  os.WriteFile(filepath.Join(rootPath, siteName, "static", "index.html"),
+  os.WriteFile(filepath.Join(rootPath, siteName, "static", "out", "index.html"),
     []byte("index.html not generated for this page."), 0777)
 
   dir := filepath.Join(rootPath, siteName, "stuffs")
