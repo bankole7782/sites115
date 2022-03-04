@@ -143,6 +143,7 @@ func generateIndexes(siteName string) {
 
       pageVariables := sites115s.ParsePageVariables(dataPart)
       pathToWrite := strings.Replace(path, walkingDir, "", 1)
+      pathToWrite = strings.ReplaceAll(pathToWrite, ".md", ".html")
 
       index := 0
       for k, v := range allPagesMap {

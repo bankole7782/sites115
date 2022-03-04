@@ -124,7 +124,7 @@ func doSearch(w http.ResponseWriter, r *http.Request) {
   sort.SliceStable(retIds, func(i, j int) bool {
     x := textWeights[ retIds[i] ]
     y := textWeights[ retIds[j] ]
-    return x < y
+    return x > y
   })
 
   // change the links to addresses.
