@@ -3,12 +3,12 @@
 a static sites generator with search functionality
 
 
-## How to create a site
-1.  Get the source from github.
-1.  Switch to the folder and run `go run . cs sitename` to create a site called `sitename`.
-1.  To render a site run `go run . rs sitename` to render a site called `sitename`
-1.  To view your site run `go run ./sites115d /path/to/sitename/out`. Replace /path/to/sitename/out with the actual dir.
-
+## How to use
+1.  Install with `sudo snap install sites115`
+1.  To create a site called `sitename` run `sites115 cs sitename`.
+1.  To render a site run `sites115 rs sitename` to render a site called `sitename`
+1.  To view your site run `sites115.sites115d /path/to/sitename/out`. Replace /path/to/sitename/out with the actual dir.
+1.  To deploy use docker. The dockerfile needed is part of the created site.
 
 ## Folder Structure
 - `out` contains the generated site
