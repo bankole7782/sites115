@@ -23,13 +23,9 @@ parts:
 apps:
   sites115:
     command: bin/sites115
-    plugs:
-      - network
 
   sites115d:
     command: bin/sites115d
-    daemon: simple
-    restart-condition: on-abnormal
     plugs:
       - network
       - network-bind
