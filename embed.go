@@ -11,3 +11,6 @@ var jqueryName  = "jquery-3.6.0.min.js"
 
 //go:embed base.html
 var baseHtmlBytes []byte
+
+//go:embed Dockerfile
+var dockerfileBytes []byte

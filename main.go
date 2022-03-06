@@ -96,6 +96,7 @@ tmp/
     os.WriteFile(filepath.Join(rootPath, siteName, "stuffs", "404.html"), []byte(indexHtml), 0777)
     os.WriteFile(filepath.Join(rootPath, siteName, "static", jqueryName), jqueryBytes, 0777)
     os.WriteFile(filepath.Join(rootPath, siteName, ".gitignore"), []byte(gitignoreFile), 0777)
+    os.WriteFile(filepath.Join(rootPath, siteName, "Dockerfile"), dockerfileBytes, 0777)
 
     fmt.Printf("Your site is created at '%s'.\n", filepath.Join(rootPath, siteName))
 
