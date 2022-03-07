@@ -108,16 +108,16 @@ tmp/
       os.Exit(1)
     }
 
-    siteName := os.Args[2]
+    path := os.Args[2]
 
-    os.RemoveAll(filepath.Join(rootPath, siteName, "out"))
-    os.MkdirAll(filepath.Join(rootPath, siteName, "out"), 0777)
+    os.RemoveAll(filepath.Join(path, "out"))
+    os.MkdirAll(filepath.Join(path, "out"), 0777)
 
-    render(siteName)
-    renderIndexes(siteName)
-    os.RemoveAll(filepath.Join(rootPath, siteName, "out", "tmp"))
+    render(path)
+    renderIndexes(path)
+    os.RemoveAll(filepath.Join(path, "out", "tmp"))
 
-    
+
   case "rs":
     if len(os.Args) != 3 {
       color.Red.Println("Expected three arguments. Please check the help")
@@ -125,13 +125,14 @@ tmp/
     }
 
     siteName := os.Args[2]
+    path := filepath.Join(rootPath, siteName)
 
-    os.RemoveAll(filepath.Join(rootPath, siteName, "out"))
-    os.MkdirAll(filepath.Join(rootPath, siteName, "out"), 0777)
+    os.RemoveAll(filepath.Join(path, "out"))
+    os.MkdirAll(filepath.Join(path, "out"), 0777)
 
-    render(siteName)
-    renderIndexes(siteName)
-    os.RemoveAll(filepath.Join(rootPath, siteName, "out", "tmp"))
+    render(path)
+    renderIndexes(path)
+    os.RemoveAll(filepath.Join(path, "out", "tmp"))
 
     fmt.Println("Started...")
 
@@ -143,12 +144,12 @@ tmp/
         select {
         case event := <-w.Event:
           fmt.Println(event)
-          os.RemoveAll(filepath.Join(rootPath, siteName, "out"))
-          os.MkdirAll(filepath.Join(rootPath, siteName, "out"), 0777)
+          os.RemoveAll(filepath.Join(path, "out"))
+          os.MkdirAll(filepath.Join(path, "out"), 0777)
 
-          render(siteName)
-          renderIndexes(siteName)
-          os.RemoveAll(filepath.Join(rootPath, siteName, "out", "tmp"))
+          render(path)
+          renderIndexes(path)
+          os.RemoveAll(filepath.Join(path, "out", "tmp"))
 
         case err := <-w.Error:
           log.Fatalln(err)

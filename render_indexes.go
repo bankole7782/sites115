@@ -12,15 +12,13 @@ import (
   "github.com/bankole7782/sites115/sites115s"
 )
 
-func renderIndexes(siteName string) {
+func renderIndexes(sitePath string) {
 
-  rootPath, _ := GetRootPath()
-
-  indexesPath := filepath.Join(rootPath, siteName, "out", "_indexes")
+  indexesPath := filepath.Join(sitePath, "out", "_indexes")
   os.RemoveAll(indexesPath)
   os.MkdirAll(indexesPath, 0777)
 
-  dir := filepath.Join(rootPath, siteName, "out")
+  dir := filepath.Join(sitePath, "out")
 
   // get all pages
   allPages := make([]string, 0)
@@ -35,7 +33,7 @@ func renderIndexes(siteName string) {
         dir += "/"
       }
 
-      toRemove := filepath.Join(rootPath, siteName, "out")
+      toRemove := filepath.Join(sitePath, "out")
       if strings.HasPrefix(path, filepath.Join(toRemove, "static")) {
         return nil
       }
@@ -68,7 +66,7 @@ func renderIndexes(siteName string) {
   if err != nil {
     panic(err)
   }
-  os.WriteFile(filepath.Join(rootPath, siteName, "out", "allpages.json"), jsonBytes, 0777)
+  os.WriteFile(filepath.Join(sitePath, "out", "allpages.json"), jsonBytes, 0777)
 
   // generate indexes
   err = filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
@@ -81,7 +79,7 @@ func renderIndexes(siteName string) {
         dir += "/"
       }
 
-      toRemove := filepath.Join(rootPath, siteName, "out")
+      toRemove := filepath.Join(sitePath, "out")
       if strings.HasPrefix(path, filepath.Join(toRemove, "static")) {
         return nil
       }
@@ -94,7 +92,7 @@ func renderIndexes(siteName string) {
       if strings.HasPrefix(path, filepath.Join(toRemove, "_page_descs")) {
         return nil
       }
-      if strings.HasSuffix(path, "allpages.json") {
+      if strings.HasSuffix(sitePath, "allpages.json") {
         return nil
       }
 
@@ -107,7 +105,7 @@ func renderIndexes(siteName string) {
         }
       }
 
-      doIndex(path, strconv.Itoa(index), siteName)
+      doIndex(path, sitePath, strconv.Itoa(index))
     }
     return nil
   })
@@ -116,10 +114,10 @@ func renderIndexes(siteName string) {
     panic(err)
   }
 
-  os.MkdirAll(filepath.Join(rootPath, siteName, "out", "_page_descs"), 0777)
+  os.MkdirAll(filepath.Join(sitePath, "out", "_page_descs"), 0777)
 
   // get all dataPart's and save
-  walkingDir := filepath.Join(rootPath, siteName, "stuffs")
+  walkingDir := filepath.Join(sitePath, "stuffs")
   err = filepath.Walk(walkingDir, func(path string, info os.FileInfo, err error) error {
     if err != nil {
       return err
@@ -154,7 +152,7 @@ func renderIndexes(siteName string) {
       }
 
       jsonBytes, _ := json.Marshal(pageVariables)
-      os.WriteFile(filepath.Join(rootPath, siteName, "out", "_page_descs", strconv.Itoa(index) + ".json"), jsonBytes, 0777)
+      os.WriteFile(filepath.Join(sitePath, "out", "_page_descs", strconv.Itoa(index) + ".json"), jsonBytes, 0777)
     }
     return nil
   })
@@ -166,7 +164,7 @@ func renderIndexes(siteName string) {
 }
 
 
-func doIndex(textPath, index, siteName string) {
+func doIndex(textPath, sitePath, index string) {
 	raw, err := os.ReadFile(textPath)
 	if err != nil {
 		return
@@ -203,18 +201,13 @@ func doIndex(textPath, index, siteName string) {
 		}
 	}
 
-	rootPath, _ := GetRootPath()
-
-	if ! strings.HasSuffix(rootPath, "/") {
-		rootPath += "/"
-	}
-
 	for word, wordCount := range wordCountMap {
-		dirToMake := filepath.Join(rootPath, siteName, "out", "_indexes", word)
+		dirToMake := filepath.Join(sitePath, "out", "_indexes", word)
 		os.MkdirAll(dirToMake, 0777)
 		err = os.WriteFile(filepath.Join(dirToMake, index), []byte(fmt.Sprintf("%d", wordCount)), 0777)
 		if err != nil {
 			fmt.Printf("word is : '%s'\n", word)
+      fmt.Println(err)
       return
 		}
 	}
