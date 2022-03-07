@@ -51,6 +51,8 @@ a static sites generator with search functionality
 ### Page
 Which is of type `map[string]string` that would contain your page variables.
 
+This is passed to non-index html pages and markdown pages.
+
 ### Paginator
 Which is declared as
 ```go
@@ -73,8 +75,12 @@ Paginator object is passed to the 'index.html' and the 'search_results.html' pag
 ### SearchStr
 Contains the query for example. `s=bank+account`
 
+This is passed to the 'search_results.html' pages.
+
 ### HTML
 Contains a HTML generated from markdown.
+
+This is passed to the markdown pages.
 
 
 ## About searches
