@@ -37,7 +37,7 @@ Main Commands:
   cs      Creates a newsite from a template. It expects the name of the site. The site would be created
           in the 'working directory'
 
-  rso     Render Site Only. It expects the name of the site.
+  rso     Render Site Only. It expects the path to the site.
 
   rs      Render Site. It expects the name of the site. It supports reload when the site changes.
 
