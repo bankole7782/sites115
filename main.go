@@ -37,6 +37,8 @@ Main Commands:
   cs      Creates a newsite from a template. It expects the name of the site. The site would be created
           in the 'working directory'
 
+  rso     Render Site Only. It expects the name of the site.
+
   rs      Render Site. It expects the name of the site. It supports reload when the site changes.
 
   			`)
@@ -100,6 +102,22 @@ tmp/
 
     fmt.Printf("Your site is created at '%s'.\n", filepath.Join(rootPath, siteName))
 
+  case "rso":
+    if len(os.Args) != 3 {
+      color.Red.Println("Expected three arguments. Please check the help")
+      os.Exit(1)
+    }
+
+    siteName := os.Args[2]
+
+    os.RemoveAll(filepath.Join(rootPath, siteName, "out"))
+    os.MkdirAll(filepath.Join(rootPath, siteName, "out"), 0777)
+
+    render(siteName)
+    renderIndexes(siteName)
+    os.RemoveAll(filepath.Join(rootPath, siteName, "out", "tmp"))
+
+    
   case "rs":
     if len(os.Args) != 3 {
       color.Red.Println("Expected three arguments. Please check the help")
