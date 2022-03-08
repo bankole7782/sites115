@@ -2,4 +2,4 @@
 
 a static sites generator with search functionality
 
-View the Tutorial at (sae.ng)[https://sae.ng/sites115]
+View the Tutorial at [sae.ng](https://sae.ng/sites115)
