@@ -92,7 +92,7 @@ func renderIndexes(sitePath string) {
       if strings.HasPrefix(path, filepath.Join(toRemove, "_page_descs")) {
         return nil
       }
-      if strings.HasSuffix(sitePath, "allpages.json") {
+      if strings.HasSuffix(path, "allpages.json") {
         return nil
       }
 
