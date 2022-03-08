@@ -116,6 +116,7 @@ tmp/
     render(path)
     renderIndexes(path)
     os.RemoveAll(filepath.Join(path, "out", "tmp"))
+    os.RemoveAll(filepath.Join(path, "tmp"))
 
 
   case "rs":
@@ -150,6 +151,7 @@ tmp/
           render(path)
           renderIndexes(path)
           os.RemoveAll(filepath.Join(path, "out", "tmp"))
+          os.RemoveAll(filepath.Join(path, "tmp"))
 
         case err := <-w.Error:
           log.Fatalln(err)
