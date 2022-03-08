@@ -176,11 +176,9 @@ func doSearch(w http.ResponseWriter, r *http.Request) {
   }
 
   rawSearchResultsTemplate, _ := os.ReadFile(filepath.Join(path, "_templates", "search_results.html"))
-  dataPart, markupPart := sites115s.GetPartsOfMarkup(string(rawSearchResultsTemplate))
+  dataPart, _ := sites115s.GetPartsOfMarkup(string(rawSearchResultsTemplate))
   pageVariables := sites115s.ParsePageVariables(dataPart)
-
   cleanSearchResultsPath := filepath.Join(path, "_templates", "clean_search_results.html")
-  os.WriteFile(cleanSearchResultsPath, []byte(markupPart), 0777)
 
   tmpl, err := template.ParseFiles(filepath.Join(path, "_templates", pageVariables["template"]), cleanSearchResultsPath)
   if err != nil {

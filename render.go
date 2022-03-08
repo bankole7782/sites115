@@ -87,15 +87,15 @@ func render(sitePath string) {
 
   // copy search templates
   if sites115s.DoesPathExists(filepath.Join(dir, "search_results.html")) {
-    copy.Copy(filepath.Join(sitePath, "stuffs", "search_results.html"),
-      filepath.Join(sitePath, "out", "_templates", "search_results.html"))
+    copy.Copy(filepath.Join(sitePath, "stuffs", "search_results.html"), filepath.Join(sitePath, "out", "_templates", "search_results.html"))
 
     searchResultsPath := filepath.Join(dir, "search_results.html")
     rawSearchResultsTemplate, _ := os.ReadFile(searchResultsPath)
-    dataPart, _ := sites115s.GetPartsOfMarkup(string(rawSearchResultsTemplate))
+    dataPart, markupPart := sites115s.GetPartsOfMarkup(string(rawSearchResultsTemplate))
     pageVariables := sites115s.ParsePageVariables(dataPart)
-    copy.Copy(filepath.Join(sitePath, "templates", pageVariables["template"]),
-      filepath.Join(sitePath, "out", "_templates", pageVariables["template"]))
+    copy.Copy(filepath.Join(sitePath, "templates", pageVariables["template"]), filepath.Join(sitePath, "out", "_templates", pageVariables["template"]))
+    cleanSearchResultsPath := filepath.Join(sitePath, "out", "_templates", "clean_search_results.html")
+    os.WriteFile(cleanSearchResultsPath, []byte(markupPart), 0777)
   }
 }
 
