@@ -163,7 +163,7 @@ func RenderHTMLToFile(s, path, sitePath string) error {
 
       dataPart, _ := sites115s.GetPartsOfMarkup(string(rawTocLinePath))
       pageVariables := sites115s.ParsePageVariables(dataPart)
-      tocURL := strings.ReplaceAll(tocLinePath, filepath.Join(path, "stuffs"), "")
+      tocURL := strings.ReplaceAll(tocLinePath, filepath.Join(sitePath, "stuffs"), "")
       tocURL = strings.ReplaceAll(tocURL, ".md", "")
       tocURL = strings.ReplaceAll(tocURL, ".html", "")
       pageVariables["url"] = tocURL
