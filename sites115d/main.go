@@ -54,10 +54,10 @@ func main() {
     if r.URL.Path == "/search_results" {
       doSearch(w, r)
     } else if strings.HasPrefix(r.URL.Path, "/_indexes") || strings.HasPrefix(r.URL.Path, "/_templates") {
-      http.ServeFile(w, r, filepath.Join(path, "404.html"))
+      do404(path, w, r)
     } else if strings.HasSuffix(r.URL.Path, "/") && ! strings.HasPrefix(r.URL.Path, "/static") {
       if ! sites115s.DoesPathExists(filepath.Join(path, r.URL.Path + "index.html")) {
-        http.ServeFile(w, r, filepath.Join(path, "404.html"))
+        do404(path, w, r)
       } else {
         http.ServeFile(w, r, filepath.Join(path, r.URL.Path + "index.html"))
       }
@@ -67,7 +67,7 @@ func main() {
       http.ServeFile(w, r, filepath.Join(path, r.URL.Path))
     } else {
       if ! sites115s.DoesPathExists(filepath.Join(path, r.URL.Path + ".html")) {
-        http.ServeFile(w, r, filepath.Join(path, "404.html"))
+        do404(path, w, r)
       } else {
         http.ServeFile(w, r, filepath.Join(path, r.URL.Path + ".html"))
       }
@@ -77,17 +77,22 @@ func main() {
   http.ListenAndServe(fmt.Sprintf(":%s", conf.Get("port")), mux)
 }
 
+func do404(path string, w http.ResponseWriter, r *http.Request) {
+  w.WriteHeader(http.StatusNotFound)
+  do404(path, w, r)
+}
+
 
 func doSearch(w http.ResponseWriter, r *http.Request) {
   path := os.Args[1]
   params, err := url.ParseQuery(r.URL.RawQuery)
   if err != nil {
-    http.ServeFile(w, r, filepath.Join(path, "404.html"))
+    do404(path, w, r)
     return
   }
 
   if r.FormValue("s") == "" {
-    http.ServeFile(w, r, filepath.Join(path, "404.html"))
+    do404(path, w, r)
     return
   }
   words := strings.Fields(params["s"][0])
@@ -105,7 +110,7 @@ func doSearch(w http.ResponseWriter, r *http.Request) {
 
     dirFIs, err := os.ReadDir(filepath.Join(path, "_indexes", word))
     if err != nil {
-      http.ServeFile(w, r, filepath.Join(path, "404.html"))
+      do404(path, w, r)
       return
     }
 
