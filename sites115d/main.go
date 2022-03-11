@@ -79,7 +79,7 @@ func main() {
 
 func do404(path string, w http.ResponseWriter, r *http.Request) {
   w.WriteHeader(http.StatusNotFound)
-  do404(path, w, r)
+  http.ServeFile(w, r, filepath.Join(path, "404.html"))
 }
 
 
