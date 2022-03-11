@@ -83,8 +83,13 @@ func doSearch(w http.ResponseWriter, r *http.Request) {
   params, err := url.ParseQuery(r.URL.RawQuery)
   if err != nil {
     http.ServeFile(w, r, filepath.Join(path, "404.html"))
+    return
   }
 
+  if r.FormValue("s") == "" {
+    http.ServeFile(w, r, filepath.Join(path, "404.html"))
+    return
+  }
   words := strings.Fields(params["s"][0])
 
   retIds := make([]string, 0)

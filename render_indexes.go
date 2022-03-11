@@ -179,8 +179,13 @@ func doIndex(textPath, sitePath, index string) {
     panic(err)
   }
 
+  title, err := doc.Find("title").Html()
+  if err != nil {
+    panic(err)
+  }
+
 	textStrippedOfHtml := bluemonday.StrictPolicy().Sanitize(html)
-	words := strings.Fields(textStrippedOfHtml)
+	words := strings.Fields(title + "\n" + textStrippedOfHtml)
 
 	wordCountMap := make(map[string]int64)
 	for _, word := range words {

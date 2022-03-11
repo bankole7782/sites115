@@ -60,6 +60,10 @@ pagination_count: 10
 // port is the number that the server would listen on.
 port: 8080
 
+// base_url
+// base_url is the base URL used for generating sitemaps
+base_url:
+
 	`
 		configFileName := "site.zconf"
     siteName := os.Args[2]
@@ -115,6 +119,7 @@ tmp/
 
     render(path)
     renderIndexes(path)
+    generateSitemap(path)
     os.RemoveAll(filepath.Join(path, "out", "tmp"))
     os.RemoveAll(filepath.Join(path, "tmp"))
 
@@ -133,6 +138,7 @@ tmp/
 
     render(path)
     renderIndexes(path)
+    generateSitemap(path)
     os.RemoveAll(filepath.Join(path, "out", "tmp"))
 
     fmt.Println("Started...")
@@ -150,6 +156,7 @@ tmp/
 
           render(path)
           renderIndexes(path)
+          generateSitemap(path)
           os.RemoveAll(filepath.Join(path, "out", "tmp"))
           os.RemoveAll(filepath.Join(path, "tmp"))
 
