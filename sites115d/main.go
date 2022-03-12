@@ -79,7 +79,8 @@ func main() {
 
 func do404(path string, w http.ResponseWriter, r *http.Request) {
   w.WriteHeader(http.StatusNotFound)
-  http.ServeFile(w, r, filepath.Join(path, "404.html"))
+  raw, _ := os.ReadFile(filepath.Join(path, "404.html"))
+  fmt.Fprintf(w, string(raw))
 }
 
 
