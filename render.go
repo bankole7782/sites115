@@ -104,6 +104,13 @@ func RenderHTMLToFile(s, path, sitePath string) error {
   dataPart, markupPart := sites115s.GetPartsOfMarkup(s)
   pageVariables := sites115s.ParsePageVariables(dataPart)
 
+  for _, varName := range []string{"title", "template", "meta", "keywords"} {
+    if _, ok := pageVariables[varName]; ! ok {
+      panic(fmt.Sprintf("The variable '%s' was included in the page variables of '%s'. It is compulsory", varName,
+        filepath.Join(sitePath, "stuffs", path)))
+    }
+  }
+
   confPath := filepath.Join(sitePath, "site.zconf")
 
   if ! sites115s.DoesPathExists(confPath) {
@@ -239,6 +246,13 @@ func innerRenderHTMLToFile(path, sitePath string, ctx HTMLContext, tmpl *templat
 func RenderMDToFile(s, path, sitePath string) error {
   dataPart, markupPart := sites115s.GetPartsOfMarkup(s)
   pageVariables := sites115s.ParsePageVariables(dataPart)
+
+  for _, varName := range []string{"title", "template", "meta", "keywords", "md_template"} {
+    if _, ok := pageVariables[varName]; ! ok {
+      panic(fmt.Sprintf("The variable '%s' was included in the page variables of '%s'. It is compulsory", varName,
+        filepath.Join(sitePath, "stuffs", path)))
+    }
+  }
 
   tmpl, err := template.ParseFiles(filepath.Join(sitePath, "templates", pageVariables["template"]),
     filepath.Join(sitePath, "templates", pageVariables["md_template"]))

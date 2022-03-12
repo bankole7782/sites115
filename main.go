@@ -89,7 +89,6 @@ template: base.html
 title:
 meta:
 keywords:
-date:
 ---
 `
 
