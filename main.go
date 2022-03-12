@@ -27,7 +27,8 @@ func main() {
 
 	switch os.Args[1] {
 	case "--help", "help", "h":
-  		fmt.Println(`sites115 is a terminal program used during development of a static site.
+  		fmt.Println(`sites115 is a static site generator. It brings in search functionality as well
+as generates a sitemap at '/static/sitemap.xml' of your site.
 
 Directory Commands:
   pwd     Print working directory. This is the directory where the files needed by any command
@@ -37,9 +38,10 @@ Main Commands:
   cs      Creates a newsite from a template. It expects the name of the site. The site would be created
           in the 'working directory'
 
-  rso     Render Site Only. It expects the path to the site.
-
   rs      Render Site. It expects the name of the site. It supports reload when the site changes.
+
+  rso     Render Site Only. It expects the path to the site. This is necessary for building a docker image.
+
 
   			`)
 
