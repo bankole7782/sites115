@@ -246,10 +246,11 @@ func doSearch(w http.ResponseWriter, r *http.Request) {
     ToLongDate func(string) string
     Modulo func(int, int) int
     Plus func(int, int) int
+    Minus func(int, int) int
   }
 
   searchStr := "s=" + params.Get("s")
 
   tmpl.Execute(w, Context{pageVariables, paginator, searchStr, sites115s.ToLower, sites115s.ToUpper,
-    sites115s.ToLongDate, sites115s.Modulo, sites115s.Plus})
+    sites115s.ToLongDate, sites115s.Modulo, sites115s.Plus, sites115s.Minus})
 }

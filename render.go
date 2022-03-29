@@ -26,6 +26,7 @@ type HTMLContext struct {
   ToUpper func(string) string
   Modulo func(int, int) int
   Plus func(int, int) int
+  Minus func(int, int) int
 }
 
 
@@ -248,6 +249,7 @@ func innerRenderHTMLToFile(path, sitePath string, ctx HTMLContext, tmpl *templat
   ctx.ToLongDate = sites115s.ToLongDate
   ctx.Modulo = sites115s.Modulo
   ctx.Plus = sites115s.Plus
+  ctx.Minus = sites115s.Minus
 
   tmpl.Execute(writer, ctx)
   writer.Flush()
@@ -281,6 +283,7 @@ func RenderMDToFile(s, path, sitePath string) error {
     ToLongDate func(string) string
     Modulo func(int, int) int
     Plus func(int, int) int
+    Minus func(int, int) int
   }
 
   baseDir := filepath.Dir(filepath.Join(sitePath, "out", path))
@@ -295,7 +298,7 @@ func RenderMDToFile(s, path, sitePath string) error {
   writer := bufio.NewWriter(outPathHandle)
 
   tmpl.Execute(writer, Context{pageVariables, template.HTML(html), sites115s.ToLower, sites115s.ToUpper,
-    sites115s.ToLongDate, sites115s.Modulo, sites115s.Plus})
+    sites115s.ToLongDate, sites115s.Modulo, sites115s.Plus, sites115s.Minus})
   writer.Flush()
   return nil
 }
