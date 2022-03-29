@@ -21,6 +21,11 @@ import (
 type HTMLContext struct {
   Page map[string]string
   Paginator sites115s.PaginatorStruct
+  ToLower func(string) string
+  ToLongDate func(string) string
+  ToUpper func(string) string
+  Modulo func(int, int) int
+  Plus func(int, int) int
 }
 
 
@@ -215,16 +220,16 @@ func RenderHTMLToFile(s, path, sitePath string) error {
 
       // generate the index pages
       if newIndex == 1 {
-        innerRenderHTMLToFile(path, sitePath, HTMLContext{pageVariables, paginator}, tmpl)
+        innerRenderHTMLToFile(path, sitePath, HTMLContext{Page: pageVariables, Paginator: paginator}, tmpl)
       }
 
       newPath := strings.ReplaceAll(path, "index.html", "index" + strconv.Itoa(newIndex) + ".html")
-      innerRenderHTMLToFile(newPath, sitePath, HTMLContext{pageVariables, paginator}, tmpl)
+      innerRenderHTMLToFile(newPath, sitePath, HTMLContext{Page: pageVariables, Paginator:paginator}, tmpl)
 
     }
 
   } else {
-    innerRenderHTMLToFile(path, sitePath, HTMLContext{pageVariables, paginator}, tmpl)
+    innerRenderHTMLToFile(path, sitePath, HTMLContext{Page: pageVariables, Paginator: paginator}, tmpl)
   }
 
 
@@ -237,6 +242,12 @@ func innerRenderHTMLToFile(path, sitePath string, ctx HTMLContext, tmpl *templat
   outPathHandle, _ := os.Create(filepath.Join(sitePath, "out", path))
   defer outPathHandle.Close()
   writer := bufio.NewWriter(outPathHandle)
+
+  ctx.ToLower = sites115s.ToLower
+  ctx.ToUpper = sites115s.ToUpper
+  ctx.ToLongDate = sites115s.ToLongDate
+  ctx.Modulo = sites115s.Modulo
+  ctx.Plus = sites115s.Plus
 
   tmpl.Execute(writer, ctx)
   writer.Flush()
