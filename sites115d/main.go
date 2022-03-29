@@ -242,8 +242,8 @@ func doSearch(w http.ResponseWriter, r *http.Request) {
     Paginator sites115s.PaginatorStruct
     SearchStr string
     ToLower func(string) string
-    ToLongDate func(string) string
     ToUpper func(string) string
+    ToLongDate func(string) string
     Modulo func(int, int) int
     Plus func(int, int) int
   }

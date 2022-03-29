@@ -276,6 +276,11 @@ func RenderMDToFile(s, path, sitePath string) error {
   type Context struct {
     Page map[string]string
     HTML template.HTML
+    ToLower func(string) string
+    ToUpper func(string) string
+    ToLongDate func(string) string
+    Modulo func(int, int) int
+    Plus func(int, int) int
   }
 
   baseDir := filepath.Dir(filepath.Join(sitePath, "out", path))
@@ -289,7 +294,8 @@ func RenderMDToFile(s, path, sitePath string) error {
   defer outPathHandle.Close()
   writer := bufio.NewWriter(outPathHandle)
 
-  tmpl.Execute(writer, Context{pageVariables, template.HTML(html)})
+  tmpl.Execute(writer, Context{pageVariables, template.HTML(html), sites115s.ToLower, sites115s.ToUpper,
+    sites115s.ToLongDate, sites115s.Modulo, sites115s.Plus})
   writer.Flush()
   return nil
 }
