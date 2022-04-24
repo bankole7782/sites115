@@ -10,6 +10,7 @@ import (
   "github.com/microcosm-cc/bluemonday"
   "github.com/PuerkitoBio/goquery"
   "github.com/bankole7782/sites115/sites115s"
+  "log"
 )
 
 func renderIndexes(sitePath string) {
@@ -54,7 +55,8 @@ func renderIndexes(sitePath string) {
   })
 
   if err != nil {
-    panic(err)
+    log.Println(err)
+    return
   }
 
   allPagesMap := make(map[int]string)
@@ -64,7 +66,8 @@ func renderIndexes(sitePath string) {
 
   jsonBytes, err := json.Marshal(allPagesMap)
   if err != nil {
-    panic(err)
+    log.Println(err)
+    return
   }
   os.WriteFile(filepath.Join(sitePath, "out", "allpages.json"), jsonBytes, 0777)
 
@@ -111,7 +114,8 @@ func renderIndexes(sitePath string) {
   })
 
   if err != nil {
-    panic(err)
+    log.Println(err)
+    return
   }
 
   os.MkdirAll(filepath.Join(sitePath, "out", "_page_descs"), 0777)
@@ -158,7 +162,8 @@ func renderIndexes(sitePath string) {
   })
 
   if err != nil {
-    panic(err)
+    log.Println(err)
+    return
   }
 
 }
@@ -172,16 +177,19 @@ func doIndex(textPath, sitePath, index string) {
 
   doc, err := goquery.NewDocumentFromReader(strings.NewReader(string(raw)))
   if err != nil {
-    panic(err)
+    log.Println(err)
+    return
   }
   html, err := doc.Find("body").Html()
   if err != nil {
-    panic(err)
+    log.Println(err)
+    return
   }
 
   title, err := doc.Find("title").Html()
   if err != nil {
-    panic(err)
+    log.Println(err)
+    return
   }
 
 	textStrippedOfHtml := bluemonday.StrictPolicy().Sanitize(html)
