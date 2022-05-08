@@ -56,6 +56,9 @@ func main() {
 
     for _, part := range strings.Split(string(rawRedirectsTxt), "\n\n") {
       parts := strings.Split(strings.TrimSpace(part), "\n")
+      if len(parts) != 2 {
+        continue
+      }
       redirectsMap[parts[0]] = parts[1]
     }
   }
@@ -64,7 +67,7 @@ func main() {
 
   mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
     log.Println(r.URL.Path)
-    
+
     if sites115s.DoesPathExists(filepath.Join(path, "redirects.txt")) {
       returnPath, ok := redirectsMap[r.URL.Path]
       if ok {
