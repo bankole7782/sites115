@@ -37,6 +37,7 @@ func render(sitePath string) {
   os.RemoveAll(tmpPath)
 
   copy.Copy(filepath.Join(sitePath, "site.zconf"), filepath.Join(sitePath, "out", "site.zconf"))
+  copy.Copy(filepath.Join(sitePath, "redirects.txt"), filepath.Join(sitePath, "out", "redirects.txt"))
   // copy statics
   copy.Copy(filepath.Join(sitePath, "static"), filepath.Join(sitePath, "out", "static"))
   os.WriteFile(filepath.Join(sitePath, "static", "out", "index.html"),

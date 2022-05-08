@@ -47,10 +47,32 @@ func main() {
     }
   }
 
+  redirectsMap := make(map[string]string)
+  if sites115s.DoesPathExists(filepath.Join(path, "redirects.txt")) {
+    rawRedirectsTxt, err := os.ReadFile(filepath.Join(path, "redirects.txt"))
+    if err != nil {
+      log.Println(err)
+    }
+
+    for _, part := range strings.Split(string(rawRedirectsTxt), "\n\n") {
+      parts := strings.Split(strings.TrimSpace(part), "\n")
+      redirectsMap[parts[0]] = parts[1]
+    }
+  }
+
   mux := http.NewServeMux()
 
   mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
     log.Println(r.URL.Path)
+    
+    if sites115s.DoesPathExists(filepath.Join(path, "redirects.txt")) {
+      returnPath, ok := redirectsMap[r.URL.Path]
+      if ok {
+        http.Redirect(w, r, returnPath, 301)
+        return
+      }
+    }
+
     if r.URL.Path == "/search_results" {
       doSearch(w, r)
     } else if strings.HasPrefix(r.URL.Path, "/_indexes") || strings.HasPrefix(r.URL.Path, "/_templates") {
