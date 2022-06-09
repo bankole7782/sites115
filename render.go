@@ -212,20 +212,6 @@ func RenderHTMLToFile(s, path, sitePath string) error {
 
       paginator.Page = newIndex
 
-      if i == 0 {
-        paginator.PreviousPage = -1
-      } else {
-        paginator.PreviousPage = i
-        paginator.PreviousPagePath = strings.ReplaceAll(path, "index.html", "index" + strconv.Itoa(paginator.PreviousPage) + ".html")
-      }
-
-      if i == int(totalPages) - 1 {
-        paginator.NextPage = -1
-      } else {
-        paginator.NextPage = i
-        paginator.NextPagePath = strings.ReplaceAll(path, "index.html", "index" + strconv.Itoa(paginator.NextPage) + ".html")
-      }
-
       // generate the index pages
       if newIndex == 1 {
         innerRenderHTMLToFile(path, sitePath, HTMLContext{Page: pageVariables, Paginator: paginator}, tmpl)

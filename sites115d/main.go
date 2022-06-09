@@ -243,29 +243,13 @@ func doSearch(w http.ResponseWriter, r *http.Request) {
   paginator.Page = pageNum
 
   for i := 0; i < int(totalPages); i++ {
-    pagesArr = append(pagesArr, i+1)  
+    pagesArr = append(pagesArr, i+1)
   }
 
   if pageNum == int(totalPages) {
     paginator.Pages = tocObj[(pageNum-1) * paginationCount :]
   } else {
     paginator.Pages = tocObj[(pageNum-1) * paginationCount : (pageNum) * paginationCount]
-  }
-
-  if pageNum == 1 {
-    paginator.PreviousPage = -1
-  } else {
-    paginator.PreviousPage = pageNum - 1
-    params.Set("p", strconv.Itoa(paginator.PreviousPage))
-    paginator.PreviousPagePath = "/search_results?" + params.Encode()
-  }
-
-  if pageNum == int(totalPages) - 1 {
-    paginator.NextPage = -1
-  } else {
-    paginator.NextPage = pageNum + 1
-    params.Set("p", strconv.Itoa(paginator.NextPage))
-    paginator.NextPagePath = "/search_results?" + params.Encode()
   }
 
   paginator.TotalPagesArr = pagesArr

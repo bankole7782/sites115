@@ -19,10 +19,6 @@ type PaginatorStruct struct {
   PaginationCount int
   Pages []map[string]string
   TotalPages int
-  PreviousPage int
-  PreviousPagePath string
-  NextPage int
-  NextPagePath string
   TotalPagesArr []int
 }
 
