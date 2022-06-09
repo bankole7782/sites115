@@ -1,6 +1,7 @@
 package main
 
 import (
+  "fmt"
   "os"
   "path/filepath"
   "sort"
@@ -88,12 +89,14 @@ func findAllLinks(sitePath, path string) []string {
 
   rawLinkHtml, err := os.ReadFile(filepath.Join(sitePath, filePath))
   if err != nil {
-    panic("There is a 404 on your page at " + filePath)
+    fmt.Println("There is a 404 on your page at " + filePath)
+    return []string{}
   }
 
   doc, err := goquery.NewDocumentFromReader(strings.NewReader(string(rawLinkHtml)))
   if err != nil {
-    panic(err)
+    fmt.Println(err)
+    return []string{}
   }
 
   links := make([]string, 0)
