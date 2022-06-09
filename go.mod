@@ -10,7 +10,7 @@ require (
 	github.com/microcosm-cc/bluemonday v1.0.18
 	github.com/otiai10/copy v1.7.0
 	github.com/radovskyb/watcher v1.0.7
-	github.com/russross/blackfriday v1.6.0
+	github.com/russross/blackfriday/v2 v2.1.0
 	github.com/saenuma/zazabul v1.1.4
 )
 

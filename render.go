@@ -10,7 +10,7 @@ import (
   "path/filepath"
   "bufio"
   "github.com/bankole7782/sites115/sites115s"
-  "github.com/russross/blackfriday"
+  "github.com/russross/blackfriday/v2"
   "math"
   "strconv"
   "github.com/saenuma/zazabul"
@@ -145,7 +145,7 @@ func RenderHTMLToFile(s, path, sitePath string) error {
 
   tmpPath := filepath.Join(sitePath, "tmp")
   os.MkdirAll(tmpPath, 0777)
-  tmpMarkupPath := filepath.Join(tmpPath, "m" + UntestedRandomString(10) + ".html")
+  tmpMarkupPath := filepath.Join(tmpPath, "m" + UntestedRandomString(20) + ".html")
 
   os.WriteFile(tmpMarkupPath, []byte(markupPart), 0777)
 
@@ -268,12 +268,38 @@ func RenderMDToFile(s, path, sitePath string) error {
     return err
   }
 
-  html := string(blackfriday.MarkdownCommon([]byte(markupPart)))
+  ctx := HTMLContext{Page: pageVariables}
+  ctx.ToLower = sites115s.ToLower
+  ctx.ToUpper = sites115s.ToUpper
+  ctx.ToLongDate = sites115s.ToLongDate
+  ctx.Modulo = sites115s.Modulo
+  ctx.Plus = sites115s.Plus
+  ctx.Minus = sites115s.Minus
 
-  type Context struct {
-    Page map[string]string
-    HTML template.HTML
+
+  tmpPath := filepath.Join(sitePath, "tmp")
+  os.MkdirAll(tmpPath, 0777)
+  tmpMarkupPath := filepath.Join(tmpPath, "m" + UntestedRandomString(20) + ".md")
+  os.WriteFile(tmpMarkupPath, []byte(markupPart), 0777)
+
+  mdFileTempl, err := template.ParseFiles(tmpMarkupPath)
+  if err != nil {
+    return err
   }
+
+  tmpMDRenderedPath := filepath.Join(tmpPath, "m" + UntestedRandomString(20) + ".md")
+  tmpMDRenderedHandle, _ := os.Create(tmpMDRenderedPath)
+  mdWriter := bufio.NewWriter(tmpMDRenderedHandle)
+  mdFileTempl.Execute(mdWriter, ctx)
+  mdWriter.Flush()
+  tmpMDRenderedHandle.Close()
+
+  mdAfterTemplate, err := os.ReadFile(tmpMDRenderedPath)
+  if err != nil {
+    return err
+  }
+
+  html := blackfriday.Run(mdAfterTemplate)
 
   baseDir := filepath.Dir(filepath.Join(sitePath, "out", path))
   os.MkdirAll(baseDir, 0777)
@@ -286,7 +312,26 @@ func RenderMDToFile(s, path, sitePath string) error {
   defer outPathHandle.Close()
   writer := bufio.NewWriter(outPathHandle)
 
-  tmpl.Execute(writer, Context{pageVariables, template.HTML(html)})
+  type MDContext struct {
+    Page map[string]string
+    HTML template.HTML
+    ToLower func(string) string
+    ToLongDate func(string) string
+    ToUpper func(string) string
+    Modulo func(int, int) int
+    Plus func(int, int) int
+    Minus func(int, int) int
+  }
+
+  ctx2 := MDContext{Page: pageVariables, HTML: template.HTML(html)}
+  ctx2.ToLower = sites115s.ToLower
+  ctx2.ToUpper = sites115s.ToUpper
+  ctx2.ToLongDate = sites115s.ToLongDate
+  ctx2.Modulo = sites115s.Modulo
+  ctx2.Plus = sites115s.Plus
+  ctx2.Minus = sites115s.Minus
+
+  tmpl.Execute(writer, ctx2)
   writer.Flush()
   return nil
 }

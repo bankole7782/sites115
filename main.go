@@ -142,6 +142,7 @@ tmp/
     renderIndexes(path)
     generateSitemap(path)
     os.RemoveAll(filepath.Join(path, "out", "tmp"))
+    os.RemoveAll(filepath.Join(path, "tmp"))
 
     fmt.Println("Started...")
 
