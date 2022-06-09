@@ -191,8 +191,8 @@ func RenderHTMLToFile(s, path, sitePath string) error {
       tocObj = append(tocObj, pageVariables)
     }
 
-    totalLinks := len(lines)
-    totalPages := math.Ceil( float64(totalLinks) / float64(paginationCount) )
+    totalLinks := len(tocObj)
+    totalPages := math.Round( float64(totalLinks) / float64(paginationCount) )
 
     pagesArr := make([]int, 0)
     for i := 0; i < int(totalPages); i++ {
