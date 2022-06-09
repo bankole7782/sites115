@@ -24,7 +24,7 @@ keywords: programs, database, program, forms, git, stories
     <div id="pagination">
       Pages:
       {{range .Paginator.TotalPagesArr}}
-        <a class="pagination-link" href="/search_results?{{.SearchStr}}&p={{.}}">{{.}}</a>
+        <a class="pagination-link" href="/search_results?s={{$.SearchStr}}&p={{.}}">{{.}}</a>
       {{end}}
     </div>
   {{end}}
