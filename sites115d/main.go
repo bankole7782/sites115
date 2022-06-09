@@ -186,12 +186,14 @@ func doSearch(w http.ResponseWriter, r *http.Request) {
   tocObj := make([]map[string]string, 0)
 
   for _, retId := range retIds {
-    foundPages = append(foundPages, allPagesMap[retId])
-
     descPath := filepath.Join(path, "_page_descs", retId + ".json")
     rawDesc, _ := os.ReadFile(descPath)
     pageVariables := make(map[string]string)
     json.Unmarshal(rawDesc, &pageVariables)
+    if allPagesMap[retId] == "" {
+      continue
+    }
+    foundPages = append(foundPages, allPagesMap[retId])
     pageVariables["url"] = strings.ReplaceAll(allPagesMap[retId], ".html", "")
     tocObj = append(tocObj, pageVariables)
   }
@@ -228,28 +230,32 @@ func doSearch(w http.ResponseWriter, r *http.Request) {
   pagesArr := make([]int, 0)
   pageMapArr := make([]map[string]string, 0)
 
-  paginator := sites115s.PaginatorStruct{TotalPages: int(totalPages), PaginationCount: paginationCount,
-    TotalPagesArr: pagesArr, Pages: pageMapArr}
+  paginator := sites115s.PaginatorStruct{TotalPages: int(totalPages), PaginationCount: paginationCount, Pages: pageMapArr}
 
-  pageNum, _ := strconv.Atoi(params.Get("p"))
-
-  paginator.Page = pageNum + 1
-
-  for i := 0; i < int(totalPages); i++ {
-    pagesArr = append(pagesArr, i+1)
-
-    if i == int(totalPages) - 1 {
-      paginator.Pages = tocObj[(pageNum) * paginationCount: ]
-    } else {
-      paginator.Pages = tocObj[(pageNum) * paginationCount: (pageNum+1) * paginationCount]
-    }
-
+  var pageNum int
+  if params.Get("p") == "" {
+    pageNum = 1
+  } else {
+    tmpPageNum, _ := strconv.Atoi(params.Get("p"))
+    pageNum = tmpPageNum
   }
 
-  if pageNum == 0 {
+  paginator.Page = pageNum
+
+  for i := 0; i < int(totalPages); i++ {
+    pagesArr = append(pagesArr, i+1)  
+  }
+
+  if pageNum == int(totalPages) {
+    paginator.Pages = tocObj[(pageNum-1) * paginationCount :]
+  } else {
+    paginator.Pages = tocObj[(pageNum-1) * paginationCount : (pageNum) * paginationCount]
+  }
+
+  if pageNum == 1 {
     paginator.PreviousPage = -1
   } else {
-    paginator.PreviousPage = pageNum
+    paginator.PreviousPage = pageNum - 1
     params.Set("p", strconv.Itoa(paginator.PreviousPage))
     paginator.PreviousPagePath = "/search_results?" + params.Encode()
   }
@@ -257,10 +263,12 @@ func doSearch(w http.ResponseWriter, r *http.Request) {
   if pageNum == int(totalPages) - 1 {
     paginator.NextPage = -1
   } else {
-    paginator.NextPage = pageNum
+    paginator.NextPage = pageNum + 1
     params.Set("p", strconv.Itoa(paginator.NextPage))
     paginator.NextPagePath = "/search_results?" + params.Encode()
   }
+
+  paginator.TotalPagesArr = pagesArr
 
   type Context struct {
     Page map[string]string
@@ -274,7 +282,7 @@ func doSearch(w http.ResponseWriter, r *http.Request) {
     Minus func(int, int) int
   }
 
-  searchStr := "s=" + params.Get("s")
+  searchStr := params.Get("s")
 
   tmpl.Execute(w, Context{pageVariables, paginator, searchStr, sites115s.ToLower, sites115s.ToUpper,
     sites115s.ToLongDate, sites115s.Modulo, sites115s.Plus, sites115s.Minus})

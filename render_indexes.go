@@ -61,7 +61,12 @@ func renderIndexes(sitePath string) {
 
   allPagesMap := make(map[int]string)
   for i, page := range allPages {
-    allPagesMap[i+1] = page
+    basePage := filepath.Base(page)
+    if strings.HasPrefix(basePage, "index") {
+      continue
+    } else {
+      allPagesMap[i+1] = page
+    }
   }
 
   jsonBytes, err := json.Marshal(allPagesMap)
