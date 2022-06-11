@@ -98,12 +98,20 @@ keywords:
 out/
 tmp/
 `
+    redirectsFile := `
+/favicon.ico
+/static/logo.png
+
+/sitemap.xml
+/static/sitemap.xml
+
+`
     os.WriteFile(filepath.Join(rootPath, siteName, "templates", "base.html"), baseHtmlBytes, 0777)
     os.WriteFile(filepath.Join(rootPath, siteName, "stuffs", "index.html"), []byte(indexHtml), 0777)
     os.WriteFile(filepath.Join(rootPath, siteName, "stuffs", "404.html"), []byte(indexHtml), 0777)
     os.WriteFile(filepath.Join(rootPath, siteName, "static", jqueryName), jqueryBytes, 0777)
     os.WriteFile(filepath.Join(rootPath, siteName, ".gitignore"), []byte(gitignoreFile), 0777)
-    os.WriteFile(filepath.Join(rootPath, siteName, "redirects.txt"), nil, 0777)
+    os.WriteFile(filepath.Join(rootPath, siteName, "redirects.txt"), []byte(redirectsFile), 0777)
     os.WriteFile(filepath.Join(rootPath, siteName, "Dockerfile"), dockerfileBytes, 0777)
 
     fmt.Printf("Your site is created at '%s'.\n", filepath.Join(rootPath, siteName))
@@ -181,6 +189,9 @@ tmp/
       log.Fatalln(err)
     }
     if err := w.Add(filepath.Join(rootPath, siteName, "site.zconf")); err != nil {
+      log.Fatalln(err)
+    }
+    if err := w.Add(filepath.Join(rootPath, siteName, "redirects.txt")); err != nil {
       log.Fatalln(err)
     }
 
