@@ -9,6 +9,7 @@ import (
   "github.com/radovskyb/watcher"
   "log"
   "time"
+  "github.com/bankole7782/sites115/sites115s"
 )
 
 
@@ -38,7 +39,7 @@ Main Commands:
   cs      Creates a newsite from a template. It expects the name of the site. The site would be created
           in the 'working directory'
 
-  rs      Render Site. It expects the name of the site. It supports reload when the site changes.
+  dev     Render Site and View. It expects the name of the site. It supports reload when the site changes.
 
   rso     Render Site Only. It expects the path to the site. This is necessary for building a docker image.
 
@@ -134,7 +135,7 @@ tmp/
     os.RemoveAll(filepath.Join(path, "tmp"))
 
 
-  case "rs":
+  case "dev":
     if len(os.Args) != 3 {
       color.Red.Println("Expected three arguments. Please check the help")
       os.Exit(1)
@@ -194,6 +195,8 @@ tmp/
     if err := w.Add(filepath.Join(rootPath, siteName, "redirects.txt")); err != nil {
       log.Fatalln(err)
     }
+
+    go sites115s.StartServer(filepath.Join(rootPath, siteName, "out"))
 
     if err := w.Start(time.Millisecond * 100); err != nil {
       log.Fatalln(err)
