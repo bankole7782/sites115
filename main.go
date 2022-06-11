@@ -61,6 +61,7 @@ pagination_count: 10
 
 // port
 // port is the number that the server would listen on.
+// if you change this, remember to change it also in the supplied dockerfile.
 port: 8080
 
 // base_url

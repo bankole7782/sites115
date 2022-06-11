@@ -58,7 +58,7 @@ func StartServer(path string) {
   mux := http.NewServeMux()
 
   mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-    log.Println(r.URL.Path)
+    log.Println(r.URL)
 
     if DoesPathExists(filepath.Join(path, "redirects.txt")) {
       returnPath, ok := redirectsMap[r.URL.Path]
@@ -69,7 +69,7 @@ func StartServer(path string) {
     }
 
     if r.URL.Path == "/search_results" {
-      doSearch(w, r)
+      doSearch(path, w, r)
     } else if strings.HasPrefix(r.URL.Path, "/_indexes") || strings.HasPrefix(r.URL.Path, "/_templates") {
       do404(path, w, r)
     } else if strings.HasSuffix(r.URL.Path, "/") && ! strings.HasPrefix(r.URL.Path, "/static") {
@@ -94,6 +94,7 @@ func StartServer(path string) {
   http.ListenAndServe(fmt.Sprintf(":%s", conf.Get("port")), mux)
 }
 
+
 func do404(path string, w http.ResponseWriter, r *http.Request) {
   w.WriteHeader(http.StatusNotFound)
   raw, _ := os.ReadFile(filepath.Join(path, "404.html"))
@@ -101,8 +102,7 @@ func do404(path string, w http.ResponseWriter, r *http.Request) {
 }
 
 
-func doSearch(w http.ResponseWriter, r *http.Request) {
-  path := os.Args[1]
+func doSearch(path string, w http.ResponseWriter, r *http.Request) {
   params, err := url.ParseQuery(r.URL.RawQuery)
   if err != nil {
     do404(path, w, r)
