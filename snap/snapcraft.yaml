@@ -23,6 +23,9 @@ parts:
 apps:
   sites115:
     command: bin/sites115
+    plugs:
+      - network
+      - network-bind
 
   sites115d:
     command: bin/sites115d
