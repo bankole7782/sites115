@@ -154,7 +154,21 @@ tmp/
     os.RemoveAll(filepath.Join(path, "out", "tmp"))
     os.RemoveAll(filepath.Join(path, "tmp"))
 
+    confPath := filepath.Join(path, "site.zconf")
+    conf, err := zazabul.LoadConfigFile(confPath)
+    if err != nil {
+      log.Println(err)
+    }
+
+    for _, item := range conf.Items {
+      if item.Value == "" {
+        color.Red.Println("Every field in the launch file is compulsory.")
+      }
+    }
+
+
     fmt.Println("Started...")
+    fmt.Printf("View site @ http://127.0.0.1:%s\n\n", conf.Get("port"))
 
     // watch for new files
     w := watcher.New()
