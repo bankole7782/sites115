@@ -9,15 +9,55 @@ import (
   "github.com/radovskyb/watcher"
   "log"
   "time"
+  "io"
+  "strings"
+  "net/http"
+  "runtime"
   "github.com/bankole7782/sites115/sites115s"
 )
 
+const VersionFormat = "20060102T150405MST"
 
 func main() {
   rootPath, err := GetRootPath()
   if err != nil {
     panic(err)
     os.Exit(1)
+  }
+
+  if runtime.GOOS == "windows" {
+    newVersionStr := ""
+    resp, err := http.Get("https://sae.ng/static/wapps/sites115.txt")
+    if err != nil {
+      fmt.Println(err)
+    }
+    if err == nil {
+      defer resp.Body.Close()
+      body, err := io.ReadAll(resp.Body)
+      if err == nil && resp.StatusCode == 200 {
+        newVersionStr = string(body)
+      }
+    }
+
+    newVersionStr = strings.TrimSpace(newVersionStr)
+    currentVersionStr = strings.TrimSpace(currentVersionStr)
+
+    hnv := false
+    if newVersionStr != "" && newVersionStr != currentVersionStr {
+      time1, err1 := time.Parse(VersionFormat, newVersionStr)
+      time2, err2 := time.Parse(VersionFormat, currentVersionStr)
+
+      if err1 == nil && err2 == nil && time2.Before(time1) {
+        hnv = true
+      }
+    }
+
+    if hnv == true {
+      fmt.Println("sites115 has an update.")
+      fmt.Println("please visit 'https://sae.ng/sites115' for update instructions." )
+      return
+    }
+
   }
 
   if len(os.Args) < 2 {

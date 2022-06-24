@@ -14,3 +14,6 @@ var baseHtmlBytes []byte
 
 //go:embed Dockerfile
 var dockerfileBytes []byte
+
+//go:embed version.txt
+var currentVersionStr string

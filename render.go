@@ -16,6 +16,7 @@ import (
   "github.com/saenuma/zazabul"
   "github.com/gookit/color"
   "log"
+  "runtime"
 )
 
 
@@ -61,8 +62,14 @@ func render(sitePath string) {
     }
 
     if ! info.IsDir() {
-      if ! strings.HasSuffix(dir, "/") {
-        dir += "/"
+      if runtime.GOOS == "windows" {
+        if ! strings.HasSuffix(dir, "\\") {
+          dir += "\\"
+        }
+      } else {
+        if ! strings.HasSuffix(dir, "/") {
+          dir += "/"
+        }
       }
 
       if strings.HasSuffix(path, ".txt") {
@@ -115,7 +122,7 @@ func RenderHTMLToFile(s, path, sitePath string) error {
 
   for _, varName := range []string{"title", "template", "meta", "keywords"} {
     if _, ok := pageVariables[varName]; ! ok {
-      msg := fmt.Sprintf("The variable '%s' was included in the page variables of '%s'. It is compulsory", varName,
+      msg := fmt.Sprintf("The variable '%s' was not included in the page variables of '%s'. It is compulsory", varName,
         filepath.Join(sitePath, "stuffs", path))
       log.Println(msg)
       return errors.New(msg)

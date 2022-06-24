@@ -5,6 +5,7 @@ import (
   "encoding/json"
   "strings"
   "fmt"
+  "runtime"
   "github.com/kljensen/snowball"
 
 )
@@ -81,7 +82,12 @@ func FindIn(container []string, elem string) int {
 
 
 func GetPartsOfMarkup(s string) (string, string) {
-  parts := strings.Split(s, "\n")
+  var parts []string
+  if runtime.GOOS == "windows" {
+    parts = strings.Split(s, "\r\n")
+  } else {
+    parts = strings.Split(s, "\n")
+  }
   var endOfDataIndex int
   for index, part := range parts {
     if index == 0 {
@@ -93,14 +99,25 @@ func GetPartsOfMarkup(s string) (string, string) {
     }
   }
 
-  dataPart := strings.Join(parts[1: endOfDataIndex], "\n")
-  markupPart := strings.Join(parts[endOfDataIndex+1: ], "\n")
+  var dataPart, markupPart string
+  if runtime.GOOS == "windows" {
+    dataPart = strings.Join(parts[1: endOfDataIndex], "\r\n")
+    markupPart = strings.Join(parts[endOfDataIndex+1: ], "\r\n")
+  } else {
+    dataPart = strings.Join(parts[1: endOfDataIndex], "\n")
+    markupPart = strings.Join(parts[endOfDataIndex+1: ], "\n")
+  }
   return dataPart, markupPart
 }
 
 
 func ParsePageVariables(s string) map[string]string {
-  parts := strings.Split(s, "\n")
+  var parts []string
+  if runtime.GOOS == "windows" {
+    parts = strings.Split(s, "\r\n")
+  } else {
+    parts = strings.Split(s, "\n")
+  }
   var colonIndex int
   ret := make(map[string]string)
   for _, line := range parts {
