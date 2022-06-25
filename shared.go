@@ -3,7 +3,6 @@ package main
 import (
   "os"
   "path/filepath"
-  "strings"
   "math/rand"
   "time"
 )
@@ -14,11 +13,7 @@ func GetRootPath() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	dd := os.Getenv("SNAP_USER_COMMON")
-	if strings.HasPrefix(dd, filepath.Join(hd, "snap", "go")) || dd == "" {
-		dd = filepath.Join(hd, "sites115_data")
-    os.MkdirAll(dd, 0777)
-	}
+  dd := filepath.Join(hd, "Sites115")
 
 	return dd, nil
 }

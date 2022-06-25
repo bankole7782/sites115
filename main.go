@@ -55,7 +55,7 @@ func main() {
     if hnv == true {
       fmt.Println("sites115 has an update.")
       fmt.Println("please visit 'https://sae.ng/sites115' for update instructions." )
-      return
+      fmt.Println()
     }
 
   }
