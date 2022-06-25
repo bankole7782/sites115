@@ -193,7 +193,11 @@ func RenderHTMLToFile(s, path, sitePath string) error {
       tocURL := strings.ReplaceAll(tocLinePath, filepath.Join(sitePath, "stuffs"), "")
       tocURL = strings.ReplaceAll(tocURL, ".md", "")
       tocURL = strings.ReplaceAll(tocURL, ".html", "")
-      pageVariables["url"] = tocURL
+      if runtime.GOOS == "windows" {
+        pageVariables["url"] = strings.ReplaceAll(tocURL, "\\", "/")        
+      } else {
+        pageVariables["url"] = tocURL
+      }
 
       tocObj = append(tocObj, pageVariables)
     }
