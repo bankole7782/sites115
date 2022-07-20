@@ -5,12 +5,12 @@ go 1.17
 require (
 	github.com/PuerkitoBio/goquery v1.8.0
 	github.com/adam-hanna/arrayOperations v0.2.6
+	github.com/gomarkdown/markdown v0.0.0-20220627144906-e9a81102ebeb
 	github.com/gookit/color v1.5.0
 	github.com/kljensen/snowball v0.6.0
 	github.com/microcosm-cc/bluemonday v1.0.18
 	github.com/otiai10/copy v1.7.0
 	github.com/radovskyb/watcher v1.0.7
-	github.com/russross/blackfriday/v2 v2.1.0
 	github.com/saenuma/zazabul v1.1.4
 )
 

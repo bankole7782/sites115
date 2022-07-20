@@ -10,13 +10,13 @@ import (
   "path/filepath"
   "bufio"
   "github.com/bankole7782/sites115/sites115s"
-  "github.com/russross/blackfriday/v2"
   "math"
   "strconv"
   "github.com/saenuma/zazabul"
   "github.com/gookit/color"
   "log"
   "runtime"
+  "github.com/gomarkdown/markdown"
 )
 
 
@@ -309,7 +309,8 @@ func RenderMDToFile(s, path, sitePath string) error {
     return err
   }
 
-  html := blackfriday.Run(mdAfterTemplate)
+  mdAfterTemplateNoWindowsNewlines := markdown.NormalizeNewlines(mdAfterTemplate)
+  html := markdown.ToHTML(mdAfterTemplateNoWindowsNewlines, nil, nil)
 
   baseDir := filepath.Dir(filepath.Join(sitePath, "out", path))
   os.MkdirAll(baseDir, 0777)
