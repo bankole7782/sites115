@@ -79,7 +79,18 @@ func (s1o *S1Object) ReadAllMD() ([]string, error) {
 
 	allPaths := make([]string, 0)
 	for _, dirFI := range dirFIs {
-		allPaths = append(allPaths, dirFI.Name())
+		if dirFI.IsDir() {
+			innerDirFIs, err := trueMDFS.ReadDir("root/" + dirFI.Name())
+			if err != nil {
+				return nil, err
+			}
+			for _, innerFI := range innerDirFIs {
+				allPaths = append(allPaths, dirFI.Name()+"/"+innerFI.Name())
+
+			}
+		} else {
+			allPaths = append(allPaths, dirFI.Name())
+		}
 	}
 
 	return allPaths, nil
@@ -91,12 +102,13 @@ func (s1o *S1Object) Search(searchStr string) ([]string, error) {
 		return nil, err
 	}
 
-	trueIdxFS := idxFS.(fs.ReadFileFS)
+	// trueIdxFS := idxFS.(fs.ReadDirFS)
 
 	allPaths := make([][]string, 0)
 
 	stopWords := getStopWords()
 	words := strings.Fields(searchStr)
+
 	for _, word := range words {
 		// stopwords check
 		word = strings.ToLower(word)
@@ -109,7 +121,13 @@ func (s1o *S1Object) Search(searchStr string) ([]string, error) {
 			continue
 		}
 
-		rawPaths, err := trueIdxFS.ReadFile(stemmedWord + ".txt")
+		idxHandler, err := idxFS.Open("root/" + stemmedWord + ".txt")
+		if err != nil {
+			continue
+		}
+		defer idxHandler.Close()
+
+		rawPaths, err := io.ReadAll(idxHandler)
 		if err != nil {
 			continue
 		}
@@ -119,5 +137,5 @@ func (s1o *S1Object) Search(searchStr string) ([]string, error) {
 		allPaths = append(allPaths, paths)
 	}
 
-	return arrops.Union(allPaths...), nil
+	return arrops.Intersect(allPaths...), nil
 }
