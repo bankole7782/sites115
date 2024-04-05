@@ -61,7 +61,9 @@ func main() {
 	mdFiles, _ := archiver.FilesFromDisk(nil, mdFilesMap)
 
 	projectName := filepath.Base(markdownPath)
-	mdZipPath := filepath.Join(os.TempDir(), projectName+"_md.tar.gz")
+	projectDir := filepath.Dir(markdownPath)
+
+	mdZipPath := filepath.Join(projectDir, projectName+"_md.tar.gz")
 	mdZipPathHandle, err := os.Create(mdZipPath)
 	if err != nil {
 		panic(err)
@@ -97,7 +99,7 @@ func main() {
 	})
 	idxFiles, _ := archiver.FilesFromDisk(nil, idxFilesMap)
 
-	idxZipPath := filepath.Join(os.TempDir(), projectName+"_idx.tar.gz")
+	idxZipPath := filepath.Join(projectDir, projectName+"_idx.tar.gz")
 	idxZipPathHandle, err := os.Create(idxZipPath)
 	if err != nil {
 		panic(err)
