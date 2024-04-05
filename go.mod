@@ -3,8 +3,10 @@ module github.com/bankole7782/sites115
 go 1.22.1
 
 require (
+	github.com/adam-hanna/arrayOperations v1.0.1
 	github.com/kljensen/snowball v0.9.0
 	github.com/mholt/archiver/v4 v4.0.0-alpha.8
+	github.com/russross/blackfriday v1.6.0
 	github.com/writeas/go-strip-markdown v2.0.1+incompatible
 )
 
