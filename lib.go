@@ -58,6 +58,26 @@ func getStopWords() []string {
 	return strings.Split(stopWordsStr, "\n")
 }
 
+func (s1o *S1Object) ReadAllMD() ([]string, error) {
+	mdFS, err := archiver.FileSystem(context.Background(), s1o.mDTarPath)
+	if err != nil {
+		return nil, err
+	}
+
+	trueMDFS := mdFS.(fs.ReadDirFS)
+	dirFIs, err := trueMDFS.ReadDir("")
+	if err != nil {
+		return nil, err
+	}
+
+	allPaths := make([]string, 0)
+	for _, dirFI := range dirFIs {
+		allPaths = append(allPaths, dirFI.Name())
+	}
+
+	return allPaths, nil
+}
+
 func (s1o *S1Object) Search(searchStr string) ([]string, error) {
 	idxFS, err := archiver.FileSystem(context.Background(), s1o.iDXTarPath)
 	if err != nil {
