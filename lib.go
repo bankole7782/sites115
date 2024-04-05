@@ -3,6 +3,7 @@ package sites115
 import (
 	"context"
 	"fmt"
+	"io"
 	"io/fs"
 	"os"
 	"slices"
@@ -44,8 +45,14 @@ func (s1o *S1Object) ReadMDAsHTML(path string) (string, error) {
 		return "", err
 	}
 
-	trueMDFS := mdFS.(fs.ReadFileFS)
-	rawMD, err := trueMDFS.ReadFile(path)
+	trueMDFS := mdFS.(fs.ReadDirFS)
+	mdHandler, err := trueMDFS.Open("root/" + path)
+	if err != nil {
+		return "", err
+	}
+	defer mdHandler.Close()
+
+	rawMD, err := io.ReadAll(mdHandler)
 	if err != nil {
 		return "", err
 	}
@@ -65,7 +72,7 @@ func (s1o *S1Object) ReadAllMD() ([]string, error) {
 	}
 
 	trueMDFS := mdFS.(fs.ReadDirFS)
-	dirFIs, err := trueMDFS.ReadDir("")
+	dirFIs, err := trueMDFS.ReadDir("root")
 	if err != nil {
 		return nil, err
 	}

@@ -1,0 +1,9 @@
+{{define "title"}} HomePage {{end}}
+
+{{define "main"}}
+  <h2>Index</h2>
+  {{range .Paths}}
+    <a href="/b/{{.}}">{{.}}</a>
+  {{end}}
+{{end}}
+

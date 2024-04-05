@@ -53,7 +53,7 @@ func main() {
 		} else {
 			// fmt.Println(path)
 			shortPath := strings.ReplaceAll(path, markdownPath, "")
-			mdFilesMap[path] = shortPath
+			mdFilesMap[path] = filepath.Join("root", shortPath)
 		}
 
 		return nil

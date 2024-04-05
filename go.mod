@@ -4,6 +4,7 @@ go 1.22.1
 
 require (
 	github.com/adam-hanna/arrayOperations v1.0.1
+	github.com/gorilla/mux v1.8.1
 	github.com/kljensen/snowball v0.9.0
 	github.com/mholt/archiver/v4 v4.0.0-alpha.8
 	github.com/russross/blackfriday v1.6.0
