@@ -2,8 +2,8 @@
 
 {{define "main"}}
   <h2>Index</h2>
-  {{range .Paths}}
-    <a href="/b/{{.}}">{{.}}</a>
+  {{range $k, $v := .PathsToTitle}}
+    <p><a href="/b/{{$k}}">{{$v}}</a></p>
   {{end}}
 {{end}}
 

@@ -37,15 +37,20 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
+	pathsToTitle := make(map[string]string)
+	for _, p := range allPaths {
+		pathsToTitle[p], _ = s1o.ReadMDTitle(p)
+	}
+
 	type Context struct {
-		Paths []string
+		PathsToTitle map[string]string
 	}
 
 	tmpl, err := template.ParseFiles("templates/base.html", "templates/index.html")
 	if err != nil {
 		panic(err)
 	}
-	tmpl.Execute(w, Context{allPaths})
+	tmpl.Execute(w, Context{pathsToTitle})
 }
 
 func blogHandler(w http.ResponseWriter, r *http.Request) {
@@ -68,17 +73,20 @@ func blogHandler(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
+	mdTitle, _ := s1o.ReadMDTitle(toFind)
+
 	tHTML := template.HTML(htmlStr)
 
 	type Context struct {
-		HTML template.HTML
+		HTML    template.HTML
+		MDTitle string
 	}
 
 	tmpl, err := template.ParseFiles("templates/base.html", "templates/blog_item.html")
 	if err != nil {
 		panic(err)
 	}
-	tmpl.Execute(w, Context{tHTML})
+	tmpl.Execute(w, Context{tHTML, mdTitle})
 }
 
 func searchHandler(w http.ResponseWriter, r *http.Request) {
@@ -97,14 +105,20 @@ func searchHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		panic(err)
 	}
+
+	pathsToTitle := make(map[string]string)
+	for _, p := range results {
+		pathsToTitle[p], _ = s1o.ReadMDTitle(p)
+	}
+
 	type Context struct {
-		Query string
-		Paths []string
+		Query        string
+		PathsToTitle map[string]string
 	}
 
 	tmpl, err := template.ParseFiles("templates/base.html", "templates/search.html")
 	if err != nil {
 		panic(err)
 	}
-	tmpl.Execute(w, Context{query, results})
+	tmpl.Execute(w, Context{query, pathsToTitle})
 }
