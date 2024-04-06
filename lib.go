@@ -9,6 +9,7 @@ import (
 	"slices"
 	"strings"
 
+	"github.com/PuerkitoBio/goquery"
 	arrops "github.com/adam-hanna/arrayOperations"
 	"github.com/kljensen/snowball"
 	"github.com/mholt/archiver/v4"
@@ -58,6 +59,36 @@ func (s1o *S1Object) ReadMDAsHTML(path string) (string, error) {
 	}
 
 	return string(blackfriday.MarkdownCommon(rawMD)), nil
+}
+
+func (s1o *S1Object) ReadMDTitle(path string) (string, error) {
+	html, err := s1o.ReadMDAsHTML(path)
+	if err != nil {
+		return "", err
+	}
+
+	doc, err := goquery.NewDocumentFromReader(strings.NewReader(html))
+	if err != nil {
+		return "", err
+	}
+
+	goQSelection := doc.Find("h1").First()
+	return goQSelection.Text(), nil
+}
+
+func (s1o *S1Object) ReadMDAbstract(path string) (string, error) {
+	html, err := s1o.ReadMDAsHTML(path)
+	if err != nil {
+		return "", err
+	}
+
+	doc, err := goquery.NewDocumentFromReader(strings.NewReader(html))
+	if err != nil {
+		return "", err
+	}
+
+	goQSelection := doc.Find("p").First()
+	return goQSelection.Text(), nil
 }
 
 func getStopWords() []string {
