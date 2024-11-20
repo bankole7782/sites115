@@ -1,5 +1,7 @@
 # sites115
 
+[![Go Reference](https://pkg.go.dev/badge/github.com/bankole7782/sites115.svg)](https://pkg.go.dev/github.com/bankole7782/sites115)
+
 a webmaster's assistant
 
 sites115 is all about markdown.
